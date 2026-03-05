@@ -12,17 +12,17 @@ services:
       - 5000/tcp
     volumes:
       - ~/.aspnet/https:/https:ro
-    depends_on:
-      - db
-  db:
-    volumes:
-      - db_data:/var/opt/mssql/data
-    image: mcr.microsoft.com/mssql/server:2017-latest
-    ports:
-      - "1433:1433"
-    environment:
-      SA_PASSWORD: "Password123"
-      ACCEPT_EULA: "Y"
+  #    depends_on:
+  #      - db
+  #db:
+  #  volumes:
+  #    - db_data:/var/opt/mssql/data
+  #  image: mcr.microsoft.com/mssql/server:2017-latest
+  #  ports:
+  #    - "1433:1433"
+  #  environment:
+  #    SA_PASSWORD: "Password123"
+  #    ACCEPT_EULA: "Y"
   # client:
   #   build: ./MVCApi.Client
   #   ports:
@@ -41,10 +41,10 @@ services:
       - 4200:4200
     depends_on:
       - api
-    volumes:
-      - type: bind
-        source: ./MVCApi.AngularClient
-        target: /app
-      - /app/node_modules/
-volumes:
-  db_data: null
+    # volumes:
+    #   - type: bind
+    #    source: ./MVCApi.AngularClient
+    #    target: /app
+    # - /app/node_modules/
+#volumes:
+#  db_data: null
