@@ -53,6 +53,12 @@ public class CurrencyServiceTests
         await Assert.ThrowsAsync<InvalidCurrencyCodeException>(async () => await currencyService.GetConvertedValue(testProduct, currencyCode));
     }
 
+    [Fact]
+    public async Task GetConvertedValueThrowsWithNullProduct()
+    {
+        await Assert.ThrowsAsync<PriceNotFoundException>(async () => await currencyService.GetConvertedValue(null, "USD"));
+    }
+
     [Theory]
     [InlineData(null, 2.0)]
     [InlineData("", 2.0)]
@@ -89,5 +95,11 @@ public class CurrencyServiceTests
         var testProduct = Product.Create("Test", "Test", "Test", original, Currency.Create("PLN", 2));
 
         await Assert.ThrowsAsync<CurrencyNotFoundException>(async () => await currencyService.AddConversion(testProduct, currencyCode));
+    } 
+
+    [Fact]
+    public async Task AddConversionThrowsWithNullProduct()
+    {
+        await Assert.ThrowsAsync<PriceNotFoundException>(async () => await currencyService.AddConversion(null, "USD"));
     }
 }

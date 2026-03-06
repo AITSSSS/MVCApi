@@ -42,7 +42,8 @@ namespace MVCApi.Services
 
         public async Task<decimal> GetConvertedValue(Product product, string currencyCode)
         {
-            decimal originalValue = product.Prices.FirstOrDefault(x => x.Currency.Code == EShopConsts.DefaultCurrency).Value;
+            decimal originalValue = product?.Prices?.FirstOrDefault(x => x.Currency.Code == EShopConsts.DefaultCurrency)?.Value
+                ?? throw new PriceNotFoundException();
             decimal rate = await _exchangeProvider.GetRate(currencyCode) ?? throw new NullCurrencyException();
 
             return originalValue / rate;
