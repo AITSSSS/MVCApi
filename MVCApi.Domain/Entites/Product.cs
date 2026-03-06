@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MVCApi.Domain.Exceptions;
 
 namespace MVCApi.Domain.Entites
@@ -34,6 +35,16 @@ namespace MVCApi.Domain.Entites
         public void AddConversion(CurrencyProduct cp)
         {
             CheckNull(cp, nameof(Prices));
+            CheckNull(cp.Value, nameof(cp.Value));
+            if (cp.Value <= 0)
+            {
+                throw new InvalidPriceException();   
+            }
+
+            if (Prices.Any(x => x.Currency.Equals(cp.Currency)))
+            {
+                throw new DuplicateConversionException(cp.Currency.Code);
+            }
 
             Prices.Add(cp);
         }

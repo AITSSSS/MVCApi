@@ -31,5 +31,10 @@ namespace MVCApi.Domain.Entites
 
             return new Currency(code, decimalPlaces);
         }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Currency currency && currency.Code.Equals(this.Code);
+        }
     }
 }
