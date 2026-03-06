@@ -22,7 +22,7 @@ export class ProductComponent implements OnInit {
       imageUrl = this.product?.image;
     }
     else {
-      imageUrl = "/assets" + this.product?.image;this.product?.image;
+      imageUrl = "/assets" + this.product?.image;
     }
 
     this.getBase64ImageFromURL(imageUrl).subscribe((base64data: string) => {
