@@ -111,6 +111,7 @@ namespace MVCApi
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
             services.AddScoped<ICurrencyService, CurrencyService>();
+            services.AddScoped<IExchangeProvider, ExchangeProvider>();
 
             var jwtSettings = Configuration.GetSection("JwtSettings");
             services.AddAuthentication(opt =>
