@@ -10,6 +10,7 @@ using MVCApi.Application;
 using MVCApi.Domain;
 using MVCApi.Domain.Consts;
 using MVCApi.Domain.Entites;
+using MVCApi.Services.Exceptions;
 using Newtonsoft.Json;
 
 namespace MVCApi.Services
@@ -18,35 +19,34 @@ namespace MVCApi.Services
     {
         private readonly IDomainRepository<Currency> _currencyRepository;
         private readonly IDomainRepository<Product> _productRepository;
+        private readonly IExchangeProvider _exchangeProvider;
 
-        public CurrencyService(IDomainRepository<Currency> currencyRepository, IDomainRepository<Product> productRepository)
+        public CurrencyService(IDomainRepository<Currency> currencyRepository, IDomainRepository<Product> productRepository, IExchangeProvider exchangeProvider)
         {
             _currencyRepository = currencyRepository;
             _productRepository = productRepository;
+            _exchangeProvider = exchangeProvider;
         }
 
         public async Task<CurrencyProduct> AddConversion(Product product, string currencyCode)
         {
-            Currency currency = (await _currencyRepository.GetAllAsync(x => x.Code == currencyCode)).First();
-            decimal originalValue = product.Prices.FirstOrDefault(x => x.Currency.Code == EShopConsts.DefaultCurrency).Value;
+            Currency currency = (await _currencyRepository.GetAllAsync(x => x.Code == currencyCode)).FirstOrDefault() ?? throw new CurrencyNotFoundException(currencyCode);
+            decimal convertedValue = await GetConvertedValue(product, currencyCode);
 
-            HttpClient client = new HttpClient();
-            var response = await client.GetStreamAsync($"http://api.nbp.pl/api/exchangerates/rates/a/{currencyCode.ToLower()}/?format=json");
-
-            decimal rate;
-            using (var reader = new StreamReader(response))
-            {
-                var serializer = JsonSerializer.Create();
-                var jsonReader = new JsonTextReader(reader);
-                dynamic json = serializer.Deserialize(jsonReader);
-                rate = json.rates[0].mid;
-            }
-
-            CurrencyProduct newConversion = new CurrencyProduct(product, currency, originalValue / rate);
+            CurrencyProduct newConversion = new CurrencyProduct(product, currency, convertedValue);
             product.AddConversion(newConversion);
             await _productRepository.EditAsync(product);
 
             return newConversion;
+        }
+
+        public async Task<decimal> GetConvertedValue(Product product, string currencyCode)
+        {
+            decimal originalValue = product?.Prices?.FirstOrDefault(x => x.Currency.Code == EShopConsts.DefaultCurrency)?.Value
+                ?? throw new PriceNotFoundException();
+            decimal rate = await _exchangeProvider.GetRate(currencyCode) ?? throw new NullCurrencyException();
+
+            return originalValue / rate;
         }
     }
 }
