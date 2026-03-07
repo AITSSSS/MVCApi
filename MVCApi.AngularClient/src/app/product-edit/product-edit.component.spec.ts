@@ -51,6 +51,47 @@ describe('ProductEditComponent', () => {
       .toHaveBeenCalled();
   });
 
+  it('submit() should add an edited product', () => {
+    component.form = {
+      value: {
+        name: 'fakeP',
+        description: 'aaa',
+        image: 'http://example.com/test.jpg',
+      },
+      valid: true
+    } as any;
+
+    spyOn((component as any).productService, 'apiProductEditProductIdPut')
+      .and.returnValue(of('1'));
+    spyOn((component as any).router, 'navigate');
+
+    component.submit();
+
+    expect((component as any).productService.apiProductEditProductIdPut)
+      .toHaveBeenCalledOnceWith(component.productId, component.form.value);
+    
+    expect((component as any).router.navigate)
+      .toHaveBeenCalledOnceWith(['/', 'products']);
+  });
+
+  it('submit() should try to add an edited product but fail', () => {
+    component.form = {
+      valid: false
+    } as any;
+
+    spyOn((component as any).productService, 'apiProductEditProductIdPut')
+      .and.returnValue(of('1'));
+    spyOn((component as any).router, 'navigate');
+
+    component.submit();
+
+    expect((component as any).productService.apiProductEditProductIdPut)
+      .not.toHaveBeenCalledOnceWith(component.productId, component.form.value);
+    
+    expect((component as any).router.navigate)
+      .not.toHaveBeenCalledOnceWith(['/', 'products']);
+  });
+
   it('should fetch a single productDto', () => {
     const fakeProductDto = {
       id: '123'
