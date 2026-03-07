@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../auth.service';
+import { emailRegex } from 'src/api';
 
 @Component({
   selector: 'app-sign-in',
@@ -38,14 +39,16 @@ export class SignInComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      this.returnUrl = params['returnUrl'];
+      this.returnUrl = params['returnUrl'] || '/';
     });
   }
 
   submit() {
+    this.message = '';
+    const email = this.form.value.email.trim();
     if (this.form.valid) {
       this.authService.login(
-        this.form.value.email,
+        email,
         this.form.value.password,
         this.form.value.rememberMe
       );
@@ -54,13 +57,24 @@ export class SignInComponent implements OnInit {
         next: (res) => {
           if (res) {
             this.router.navigate([this.returnUrl]);
-          } else {
-            // TODO: Error message on failed login
           }
         },
       });
+
+      this.authService.error.subscribe({
+        next: (err) => {
+          if (err) {
+            this.message = err;
+          }
+        }
+      });
     } else {
-      // TODO: Show error message
+      if(!emailRegex.test(email)) {
+        this.message = 'Bad email';
+      }
+      else if(!this.form.value.password) {
+        this.message = 'No password';
+      }
     }
   }
 }

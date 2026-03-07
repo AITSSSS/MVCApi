@@ -4,6 +4,7 @@ import {
   distinctUntilChanged,
   map,
   ReplaySubject,
+  throwError,
 } from 'rxjs';
 import { ApplicationUserDto, UserService } from 'src/api';
 
@@ -21,6 +22,9 @@ export class AuthService {
 
   private currentUserTokenSubject = new BehaviorSubject<string>('');
   public currentUserToken = this.currentUserTokenSubject.asObservable();
+
+  private hasErrorSubject = new BehaviorSubject<string | null>(null);
+  public error = this.hasErrorSubject.asObservable();
 
   constructor(private readonly api: UserService) {
     var token = this.getToken();
@@ -40,6 +44,7 @@ export class AuthService {
   }
 
   login(email: string, password: string, rememberMe: boolean = false) {
+    this.hasErrorSubject.next(null);
     return this.api
       .apiUserSignInPost({ email, password, rememberMe })
       .subscribe({
@@ -53,8 +58,21 @@ export class AuthService {
               this.currentUserSubject.next(realUser);
             });
           }
+          else {
+            this.isAuthenticatedSubject.next(false);
+            this.hasErrorSubject.next('Cannot authenticate user.');
+          }
         },
-        error: (err) => console.log(err),
+        error: (err) => {
+          console.log(err);
+          let msg = 'Something went wrong';
+          if(err?.error.includes('User with identifier')) {
+            msg = 'No user with such email in database.';
+          } else if (err?.error?.message) {
+            msg = err?.error?.message;
+          } 
+          this.hasErrorSubject.next(msg);
+        }
       });
   }
 
