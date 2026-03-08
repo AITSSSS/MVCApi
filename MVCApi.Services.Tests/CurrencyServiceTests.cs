@@ -35,7 +35,7 @@ public class CurrencyServiceTests
     [InlineData("EUR", 21.0, 21.0 / 4.0)]
     public async Task GetConvertedValueReturnsConvertedValue(string currencyCode, decimal original, decimal expected)
     {
-        var testProduct = Product.Create("Test", "Test", "Test", original, Currency.Create("PLN", 2));
+        var testProduct = Product.Create("Test", "Test Description", "https://Test.com", original, Currency.Create("PLN", 2));
 
         decimal actual = await currencyService.GetConvertedValue(testProduct, currencyCode);
 
@@ -48,7 +48,7 @@ public class CurrencyServiceTests
     [InlineData("Dttpwwss", 21.0)]
     public async Task GetConvertedValueThrowsWhenInvalidCurrencyCode(string currencyCode, decimal original)
     {
-        var testProduct = Product.Create("Test", "Test", "Test", original, Currency.Create("PLN", 2));
+        var testProduct = Product.Create("Test", "Test Description", "https://Test.com", original, Currency.Create("PLN", 2));
 
         await Assert.ThrowsAsync<InvalidCurrencyCodeException>(async () => await currencyService.GetConvertedValue(testProduct, currencyCode));
     }
@@ -64,7 +64,7 @@ public class CurrencyServiceTests
     [InlineData("", 2.0)]
     public async Task GetConvertedValueThrowsWhenNullCurrencyCode(string currencyCode, decimal original)
     {
-        var testProduct = Product.Create("Test", "Test", "Test", original, Currency.Create("PLN", 2));
+        var testProduct = Product.Create("Test", "Test Description", "https://Test.com", original, Currency.Create("PLN", 2));
 
         await Assert.ThrowsAsync<NullCurrencyException>(async () => await currencyService.GetConvertedValue(testProduct, currencyCode));
     }
@@ -76,7 +76,7 @@ public class CurrencyServiceTests
     [InlineData("EUR", 21.0, 21.0 / 4.0)]
     public async Task AddConversionAddsConversion(string currencyCode, decimal original, decimal expected)
     {
-        var testProduct = Product.Create("Test", "Test", "Test", original, Currency.Create("PLN", 2));
+        var testProduct = Product.Create("Test", "Test Description", "https://Test.com", original, Currency.Create("PLN", 2));
 
         CurrencyProduct exchange = await currencyService.AddConversion(testProduct, currencyCode);
 
@@ -92,7 +92,7 @@ public class CurrencyServiceTests
     [InlineData("", 2.0)]
     public async Task AddConversionThrowsWhenInvalidCurrencyCode(string currencyCode, decimal original)
     {
-        var testProduct = Product.Create("Test", "Test", "Test", original, Currency.Create("PLN", 2));
+        var testProduct = Product.Create("Test", "Test Description", "https://Test.com", original, Currency.Create("PLN", 2));
 
         await Assert.ThrowsAsync<CurrencyNotFoundException>(async () => await currencyService.AddConversion(testProduct, currencyCode));
     } 

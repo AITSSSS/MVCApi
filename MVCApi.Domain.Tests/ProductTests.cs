@@ -53,7 +53,7 @@ public class ProductTests
     {
         var product = VALID_PRODUCT;
 
-        Assert.Throws<LengthException>(() => product.ChangeName(Enumerable.Range(0, 100).Select(x => 'x').ToString()));
+        Assert.Throws<LengthException>(() => product.ChangeName(string.Concat(Enumerable.Range(0, 100).Select(x => 'x'))));
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class ProductTests
     {
         var product = VALID_PRODUCT;
 
-        Assert.Throws<LengthException>(() => product.ChangeDescription(Enumerable.Range(0, 10000).Select(x => 'x').ToString()));       
+        Assert.Throws<LengthException>(() => product.ChangeDescription(string.Concat(Enumerable.Range(0, 10000).Select(x => 'x'))));       
     }
 
     [Fact]

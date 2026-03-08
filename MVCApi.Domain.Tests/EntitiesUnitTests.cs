@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MVCApi.Services.Tests
+namespace MVCApi.Domain.Tests
 {
     public class EntitiesUnitTests
     {

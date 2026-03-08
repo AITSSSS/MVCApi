@@ -9,20 +9,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace MVCApi.Services.Tests
+namespace MVCApi.Tests
 {
-    public class CustomerUnitTests
+    public class CustomerControllerTests
     {
         private readonly Mock<IMediator> _mediatorMock;
         private readonly CustomerController _controller;
 
-        public CustomerUnitTests()
-            {
+        public CustomerControllerTests()
+        {
             _mediatorMock = new Mock<IMediator>();
             _controller = new CustomerController(_mediatorMock.Object);
         }
+        
         [Fact]
         public async Task CreateUser_ShouldReturnGuid()
         {

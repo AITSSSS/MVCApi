@@ -1,24 +1,20 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
 using MVCApi.Application.Commands;
 using MVCApi.Application.Dto;
-using MVCApi.Application.Queries;
 using MVCApi.Controllers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace MVCApi.Services.Tests
+namespace MVCApi.Tests
 {
-    public class UserUnitTests
+    public class UserControllerTests
     {
         private readonly Mock<IMediator> _mediatorMock;
         private readonly UserController _controller;
 
-        public UserUnitTests()
+        public UserControllerTests()
         {
             _mediatorMock = new Mock<IMediator>();
             _controller = new UserController(_mediatorMock.Object);
