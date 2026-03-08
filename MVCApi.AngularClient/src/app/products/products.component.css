@@ -3,6 +3,11 @@
   border-radius: 5px;
   padding: 1rem 0;
   margin: 1rem 0;
+  cursor: pointer;
+}
+
+.product:hover {
+  background-color: lightgray;
 }
 
 .product-detail {
