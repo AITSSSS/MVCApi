@@ -37,7 +37,7 @@ namespace MVCApi.Services.Tests
 
         }
         [Fact]
-        public async Task GetCustomerById_ShouldReturnCategory()
+        public async Task GetCustomerById_ShouldReturnId()
         {
             var expected = new CustomerDto();
             var id = Guid.NewGuid();
