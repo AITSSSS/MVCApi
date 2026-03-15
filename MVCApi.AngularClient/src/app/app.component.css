@@ -1,0 +1,17 @@
+.app-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.app-content {
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+.global-loading {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  z-index: 2000;
+}

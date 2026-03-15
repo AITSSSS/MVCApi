@@ -6,20 +6,41 @@ import {
   HttpInterceptor,
   HttpErrorResponse,
 } from '@angular/common/http';
-import { catchError, Observable, of, throwError } from 'rxjs';
+import { catchError, Observable, throwError, finalize } from 'rxjs';
 import { Router } from '@angular/router';
+import { UiFeedbackService } from './ui-feedback.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private router: Router) {}
+  constructor(
+    private readonly router: Router,
+    private readonly uiFeedback: UiFeedbackService
+  ) {}
 
-  private handleAuthError(err: HttpErrorResponse): Observable<any> {
+  private getErrorMessage(err: HttpErrorResponse): string {
+    if (err.status === 0) {
+      return 'Server is unavailable. Please try again in a moment.';
+    }
+
+    if (typeof err.error === 'string' && err.error.trim().length > 0) {
+      return err.error;
+    }
+
+    if (err.error?.message) {
+      return err.error.message;
+    }
+
+    return `Request failed (${err.status}).`;
+  }
+
+  private handleAuthError(err: HttpErrorResponse): Observable<never> {
     if (err.status === 401 || err.status === 403) {
+      this.uiFeedback.error('You need to sign in to continue.');
       this.router.navigate(['/login'], {
         state: { data: 'You must be logged in to view this resource' },
       });
-
-      return of(err.message);
+    } else {
+      this.uiFeedback.error(this.getErrorMessage(err));
     }
 
     return throwError(() => err);
@@ -29,8 +50,11 @@ export class AuthInterceptor implements HttpInterceptor {
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
-    return next
-      .handle(request)
-      .pipe(catchError((x) => this.handleAuthError(x)));
+    this.uiFeedback.beginRequest();
+
+    return next.handle(request).pipe(
+      catchError((error: HttpErrorResponse) => this.handleAuthError(error)),
+      finalize(() => this.uiFeedback.endRequest())
+    );
   }
 }

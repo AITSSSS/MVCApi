@@ -127,3 +127,29 @@ body, html {
 .forgot-password:focus{
     color: rgb(12, 97, 33);
 }
+
+.auth-page {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 520px;
+}
+
+.auth-form {
+  display: grid;
+  gap: 12px;
+}
+
+.status-success {
+  color: #198754;
+  margin-bottom: 12px;
+}
+
+.status-error {
+  color: #dc3545;
+  margin-bottom: 12px;
+}

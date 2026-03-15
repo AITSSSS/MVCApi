@@ -12,6 +12,7 @@ import {
 } from 'src/api';
 import { ShoppingCartService } from '../shopping-cart.service';
 import { jsPDF } from 'jspdf';
+import { UiFeedbackService } from '../ui-feedback.service';
 
 @Component({
   selector: 'app-products',
@@ -37,7 +38,8 @@ export class ProductsComponent implements OnInit {
     private readonly categoryService: CategoryService,
     private readonly cartService: CartService,
     private readonly shoppingCartService: ShoppingCartService,
-    private route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly uiFeedback: UiFeedbackService
   ) {}
 
   ngOnInit(): void {
@@ -47,7 +49,7 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  ngOnChanges(changes: SimpleChange) { 
+  ngOnChanges(changes: SimpleChange) {
 
   }
 
@@ -74,8 +76,8 @@ export class ProductsComponent implements OnInit {
           count: 1,
         })
         .subscribe({
-          next: () => console.log('Added'),
-          error: (err) => console.log(err),
+          next: () => this.uiFeedback.success('Product added to cart.'),
+          error: () => this.uiFeedback.error('Could not add product to cart.'),
         });
     });
   }
@@ -104,10 +106,10 @@ export class ProductsComponent implements OnInit {
         this.totalPages = res.totalPages ?? 1;
         this.hasNextPage = res.hasNextPage ?? false;
         this.hasPreviousPage = res.hasPreviousPage ?? false;
-        console.log(res)
       },
+      error: () => this.uiFeedback.error('Could not load products.'),
     });
   }
 
-  
+
 }

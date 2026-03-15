@@ -14,6 +14,7 @@ import {
 } from 'src/api';
 import { AuthService } from '../auth.service';
 import { ShoppingCartService } from '../shopping-cart.service';
+import { UiFeedbackService } from '../ui-feedback.service';
 import { CheckoutComponent } from './checkout.component';
 
 registerLocaleData(localePl);
@@ -26,6 +27,7 @@ describe('CheckoutComponent', () => {
   let cartService: jasmine.SpyObj<ShoppingCartService>;
   let orderService: jasmine.SpyObj<OrderService>;
   let router: jasmine.SpyObj<Router>;
+  let uiFeedback: jasmine.SpyObj<UiFeedbackService>;
 
   const userWithoutCustomer = {
     id: 'user-1',
@@ -91,6 +93,11 @@ describe('CheckoutComponent', () => {
       'apiOrderCreateOrderPost',
     ]);
     router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+    uiFeedback = jasmine.createSpyObj<UiFeedbackService>('UiFeedbackService', [
+      'success',
+      'error',
+      'confirmDestructive',
+    ]);
 
     customerService.apiCustomerGetCustomerByIdIdGet.and.returnValue(
       of(customerMock) as unknown as ReturnType<CustomerService['apiCustomerGetCustomerByIdIdGet']>
@@ -108,6 +115,7 @@ describe('CheckoutComponent', () => {
         { provide: ShoppingCartService, useValue: cartService },
         { provide: OrderService, useValue: orderService },
         { provide: Router, useValue: router },
+        { provide: UiFeedbackService, useValue: uiFeedback },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -157,7 +165,6 @@ describe('CheckoutComponent', () => {
   }));
 
   it('should show error alert when customer fetch fails', fakeAsync(() => {
-    spyOn(console, 'log');
     customerService.apiCustomerGetCustomerByIdIdGet.and.returnValue(
       throwError(() => new Error('failed')) as unknown as ReturnType<CustomerService['apiCustomerGetCustomerByIdIdGet']>
     );
@@ -169,6 +176,7 @@ describe('CheckoutComponent', () => {
 
     expect(component.hasCustomer).toBeTrue();
     expect(component.customer).toBeNull();
+    expect(uiFeedback.error).toHaveBeenCalledWith('Could not load customer data for checkout.');
     expect(fixture.debugElement.query(By.css('.alert.alert-error'))).toBeTruthy();
   }));
 
@@ -210,6 +218,7 @@ describe('CheckoutComponent', () => {
       contactInfoId: 'contact-1',
     });
     expect(cartService.clearCart).toHaveBeenCalled();
+    expect(uiFeedback.success).toHaveBeenCalledWith('Order has been created successfully.');
     expect(router.navigate).toHaveBeenCalledWith(['order/order-1']);
   }));
 

@@ -5,13 +5,46 @@
     margin: 1rem 0;
     padding-left: 12px;
   }
-  
+
   .product-detail {
     padding: 0 2rem;
   }
-  
+
   .product-price {
     font-weight: bold;
     font-size: 140%;
   }
-  
+
+  .centered-loader {
+    display: flex;
+    justify-content: center;
+  }
+
+  .cart-layout {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 16px;
+  }
+
+  .cart-items {
+    display: grid;
+    gap: 12px;
+  }
+
+  .cart-actions {
+    gap: 12px;
+  }
+
+  .count-field {
+    width: 110px;
+  }
+
+  .cart-summary {
+    height: fit-content;
+  }
+
+  @media (max-width: 960px) {
+    .cart-layout {
+      grid-template-columns: 1fr;
+    }
+  }

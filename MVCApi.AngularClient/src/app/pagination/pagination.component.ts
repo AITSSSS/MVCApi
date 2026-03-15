@@ -39,8 +39,14 @@ export class PaginationComponent implements OnInit {
     this.calculateRange();
   }
 
-  onPageSizeChanged(event: Event) {
-    let target = event.target as HTMLInputElement;
+  onPageSizeChanged(event: Event | { value: number }) {
+    if ((event as { value: number }).value !== undefined) {
+      this.pageSize = Number((event as { value: number }).value);
+      this.pageSizeChange.emit(this.pageSize);
+      return;
+    }
+
+    let target = (event as Event).target as HTMLInputElement;
     if (!target) return;
 
     this.pageSize = parseInt(target.value);
@@ -58,11 +64,15 @@ export class PaginationComponent implements OnInit {
   }
 
   onPageChange(pageIdx: number | string | null) {
-    if (!pageIdx) return;
+    if (pageIdx === null || pageIdx === '...') return;
 
-    if (!(typeof pageIdx === 'number') && parseInt(pageIdx) === NaN) return;
-    else if (typeof pageIdx === 'number') this.pageIndex = pageIdx
-    else this.pageIndex = parseInt(pageIdx)
+    if (typeof pageIdx === 'number') {
+      this.pageIndex = pageIdx;
+    } else {
+      const parsed = parseInt(pageIdx, 10);
+      if (Number.isNaN(parsed)) return;
+      this.pageIndex = parsed;
+    }
 
     this.pageIndexChange.emit(this.pageIndex)
   }

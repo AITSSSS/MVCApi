@@ -3,6 +3,7 @@ import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from
 import { CreateCustomer, CustomerService } from 'src/api';
 import { isEmpty } from 'src/util';
 import { AuthService } from '../auth.service';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-customer-form',
@@ -24,7 +25,9 @@ export class CustomerFormComponent implements OnInit {
   });
 
   minDate : number = new Date().getFullYear() - 18;
-  submitted : boolean = false;  
+  submitted : boolean = false;
+  isSaving: boolean = false;
+  saveStatus: 'idle' | 'saved' | 'error' = 'idle';
 
   constructor(
     private readonly customerService: CustomerService,
@@ -37,17 +40,30 @@ export class CustomerFormComponent implements OnInit {
     this.submitted = true;
     var createCustomer: CreateCustomer = this.form.value;
     if (this.form.valid) {
+      this.isSaving = true;
+      this.saveStatus = 'idle';
+
       this.customerService
         .apiCustomerCreateCustomerPost(createCustomer)
         .subscribe({
           next: (res) => {
-            this.authService.currentUser.subscribe({
+            this.authService.currentUser.pipe(take(1)).subscribe({
               next: (user) => {
                 if (isEmpty(user.domainUserId)) {
                   this.authService.linkCustomer(res);
                 }
+                this.isSaving = false;
+                this.saveStatus = 'saved';
+              },
+              error: () => {
+                this.isSaving = false;
+                this.saveStatus = 'error';
               },
             });
+          },
+          error: () => {
+            this.isSaving = false;
+            this.saveStatus = 'error';
           },
         });
     }

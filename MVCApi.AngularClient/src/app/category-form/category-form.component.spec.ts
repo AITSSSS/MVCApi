@@ -1,5 +1,5 @@
 import { HttpResponse } from '@angular/common/http';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
@@ -87,7 +87,7 @@ describe('CategoryFormComponent', () => {
     expect(routerMock.navigate).not.toHaveBeenCalled();
   });
 
-  it('should create category when isChild = false', () => {
+  it('should create category when isChild = false', fakeAsync(() => {
     component.form.patchValue({
       name: 'Test Category',
       parent: '',
@@ -103,10 +103,13 @@ describe('CategoryFormComponent', () => {
       })
     );
     expect(categoryServiceMock.apiCategoryCreateSubcategoryPost).not.toHaveBeenCalled();
-    expect(routerMock.navigate).toHaveBeenCalledWith(['/', 'categories']);
-  });
+    expect(component.saveStatus).toBe('saved');
 
-  it('should create subcategory when isChild = true', () => {
+    tick(701);
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/', 'categories']);
+  }));
+
+  it('should create subcategory when isChild = true', fakeAsync(() => {
     component.form.patchValue({
       name: 'Child',
       parent: '1',
@@ -120,6 +123,9 @@ describe('CategoryFormComponent', () => {
       parentId: '1'
     });
     expect(categoryServiceMock.apiCategoryCreateCategoryPost).not.toHaveBeenCalled();
+    expect(component.saveStatus).toBe('saved');
+
+    tick(701);
     expect(routerMock.navigate).toHaveBeenCalledWith(['/', 'categories']);
-  });
+  }));
 });

@@ -21,6 +21,8 @@ export class ProductFormComponent implements OnInit {
     categories: new FormControl('', [Validators.required])
   });
   submitted : boolean = false;
+  isSaving: boolean = false;
+  saveStatus: 'idle' | 'saved' | 'error' = 'idle';
   categories: Observable<CategoryDto[]> = this.categoryService.apiCategoryGetAllCategoriesGet()
 
   constructor(
@@ -36,20 +38,33 @@ export class ProductFormComponent implements OnInit {
     var createProduct: CreateProduct = this.form.value;
     var addProductToCategory : AddProductToCategory;
     if (this.form.valid) {
+      this.isSaving = true;
+      this.saveStatus = 'idle';
+
       this.productService
         .apiProductCreateProductPost(createProduct)
         .subscribe({
           next: (res) => {
-            console.log('Added')
-            addProductToCategory = {productId: res.toString(), categoryId: this.form.get('categories')?.value.toString()}
+            addProductToCategory = {
+              productId: res.toString(),
+              categoryId: this.form.get('categories')?.value.toString()
+            }
             this.categoryService.apiCategoryAddProductToCategoryPut(addProductToCategory).subscribe({
-              next: (res) =>{
-                console.log("Added to category");
-                this.router.navigate(['/', 'products']);
-              } 
+              next: () => {
+                this.isSaving = false;
+                this.saveStatus = 'saved';
+                setTimeout(() => this.router.navigate(['/', 'products']), 700);
+              },
+              error: () => {
+                this.isSaving = false;
+                this.saveStatus = 'error';
+              },
             })
           },
-          error: (err) => console.log(err),
+          error: () => {
+            this.isSaving = false;
+            this.saveStatus = 'error';
+          },
         });
     }
   }

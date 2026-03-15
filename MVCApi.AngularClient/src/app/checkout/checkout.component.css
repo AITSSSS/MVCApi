@@ -1,3 +1,34 @@
+.checkout-page {
+  display: block;
+}
+
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 16px;
+}
+
+.selection-columns {
+  display: grid;
+  gap: 16px;
+}
+
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 8px;
+}
+
 .selected-card {
-    border: 2px solid #283593;
+  border: 2px solid #283593;
+}
+
+.order-summary {
+  height: fit-content;
+}
+
+@media (max-width: 960px) {
+  .checkout-grid {
+    grid-template-columns: 1fr;
+  }
 }

@@ -1,0 +1,23 @@
+.details-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr auto;
+  gap: 16px;
+  align-items: start;
+}
+
+.details-image {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.details-price {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (max-width: 960px) {
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

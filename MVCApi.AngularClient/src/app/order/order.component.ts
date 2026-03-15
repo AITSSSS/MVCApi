@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { OrderDto, OrderService, OrderState } from 'src/api';
+import { UiFeedbackService } from '../ui-feedback.service';
 
 @Component({
   selector: 'app-order',
@@ -18,7 +19,8 @@ export class OrderComponent implements OnInit {
 
   constructor(
     private readonly orderService: OrderService,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly uiFeedback: UiFeedbackService
   ) {
     var orderId = this.route.snapshot.paramMap.get('orderId')?.toString();
     if (orderId) {
@@ -33,10 +35,36 @@ export class OrderComponent implements OnInit {
   ngOnInit(): void {}
 
   onChangeState(): void {
-    if (this.orderId)
-      this.orderService.apiOrderChangeStatePut({
-        orderId: this.orderId,
-        state: this.selectedIdx as OrderState,
-      });
+    if (!this.orderId) {
+      return;
+    }
+
+    const applyStateChange = () => {
+      this.orderService
+        .apiOrderChangeStatePut({
+          orderId: this.orderId!,
+          state: this.selectedIdx as OrderState,
+        })
+        .subscribe({
+          next: () => this.uiFeedback.success('Order state has been updated.'),
+          error: () => this.uiFeedback.error('Could not update order state.'),
+        });
+    };
+
+    if (this.selectedIdx === OrderState.Cancelled) {
+      this.uiFeedback
+        .confirmDestructive(
+          'Canceling an order is destructive and may be irreversible. Continue?',
+          'Cancel order'
+        )
+        .subscribe((confirmed) => {
+          if (confirmed) {
+            applyStateChange();
+          }
+        });
+      return;
+    }
+
+    applyStateChange();
   }
 }

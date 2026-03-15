@@ -1,6 +1,6 @@
 import { formatDate } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { of } from 'rxjs';
 import {
@@ -13,6 +13,7 @@ import {
 } from 'src/api';
 
 import { CustomerEditComponent } from './customer-edit.component';
+import { UiFeedbackService } from '../ui-feedback.service';
 
 describe('CustomerEditComponent', () => {
   let component: CustomerEditComponent;
@@ -21,6 +22,7 @@ describe('CustomerEditComponent', () => {
   let addressService: jasmine.SpyObj<AddressService>;
   let contactInfoService: jasmine.SpyObj<ContactInfoService>;
   let router: jasmine.SpyObj<Router>;
+  let uiFeedback: jasmine.SpyObj<UiFeedbackService>;
 
   const customerMock: CustomerDto = {
     id: 'customer-1',
@@ -52,12 +54,15 @@ describe('CustomerEditComponent', () => {
       'apiCustomerEditCustomerIdPut'
     ]);
     addressService = jasmine.createSpyObj<AddressService>('AddressService', [
-      'apiAddressGetAddressByIdIdGet'
+      'apiAddressGetAddressByIdIdGet',
+      'apiAddressEditAddressIdPut'
     ]);
     contactInfoService = jasmine.createSpyObj<ContactInfoService>('ContactInfoService', [
-      'apiContactInfoGetContactInfoByIdIdGet'
+      'apiContactInfoGetContactInfoByIdIdGet',
+      'apiContactInfoEditContactInfoIdPut'
     ]);
     router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+    uiFeedback = jasmine.createSpyObj<UiFeedbackService>('UiFeedbackService', ['success', 'error']);
 
     customerService.apiCustomerGetCustomerByIdIdGet.and.returnValue(
       of(customerMock) as unknown as ReturnType<CustomerService['apiCustomerGetCustomerByIdIdGet']>
@@ -68,8 +73,14 @@ describe('CustomerEditComponent', () => {
     addressService.apiAddressGetAddressByIdIdGet.and.returnValue(
       of(addressMock) as unknown as ReturnType<AddressService['apiAddressGetAddressByIdIdGet']>
     );
+    addressService.apiAddressEditAddressIdPut.and.returnValue(
+      of({}) as unknown as ReturnType<AddressService['apiAddressEditAddressIdPut']>
+    );
     contactInfoService.apiContactInfoGetContactInfoByIdIdGet.and.returnValue(
       of(contactInfoMock) as unknown as ReturnType<ContactInfoService['apiContactInfoGetContactInfoByIdIdGet']>
+    );
+    contactInfoService.apiContactInfoEditContactInfoIdPut.and.returnValue(
+      of({}) as unknown as ReturnType<ContactInfoService['apiContactInfoEditContactInfoIdPut']>
     );
 
     await TestBed.configureTestingModule({
@@ -87,14 +98,14 @@ describe('CustomerEditComponent', () => {
             }
           }
         },
-        { provide: Router, useValue: router }
+        { provide: Router, useValue: router },
+        { provide: UiFeedbackService, useValue: uiFeedback }
       ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    spyOn(console, 'log');
     fixture = TestBed.createComponent(CustomerEditComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -113,7 +124,7 @@ describe('CustomerEditComponent', () => {
     expect(component.form.value).toEqual(jasmine.objectContaining({
       firstName: 'Jan',
       lastName: 'Kowalski',
-      dateOfBirth: formatDate('2000-01-02T00:00:00', 'YYYY-MM-dd', 'en-US'),
+      dateOfBirth: formatDate('2000-01-02T00:00:00', 'yyyy-MM-dd', 'en-US'),
       country: 'Poland',
       city: 'Warsaw',
       street: 'Main',
@@ -135,27 +146,42 @@ describe('CustomerEditComponent', () => {
     expect(router.navigate).not.toHaveBeenCalled();
   });
 
-  it('should submit valid form and navigate to customers list', () => {
+  it('should submit valid form and navigate to customers list', fakeAsync(() => {
     component.submit();
 
     expect(component.submitted).toBeTrue();
+    expect(component.saveStatus).toBe('saved');
+    expect(component.isSaving).toBeFalse();
     expect(customerService.apiCustomerEditCustomerIdPut).toHaveBeenCalledWith(
       'customer-1',
       jasmine.objectContaining({
         firstName: 'Jan',
         lastName: 'Kowalski',
-        dateOfBirth: formatDate('2000-01-02T00:00:00', 'YYYY-MM-dd', 'en-US'),
+        dateOfBirth: formatDate('2000-01-02T00:00:00', 'yyyy-MM-dd', 'en-US'),
+      })
+    );
+    expect(addressService.apiAddressEditAddressIdPut).toHaveBeenCalledWith(
+      'address-1',
+      jasmine.objectContaining({
         country: 'Poland',
         city: 'Warsaw',
         street: 'Main',
         streetNumber: '10',
         postCode: '00-001',
-        email: 'jan@example.com',
-        phoneNumber: '123456789'
       })
     );
+    expect(contactInfoService.apiContactInfoEditContactInfoIdPut).toHaveBeenCalledWith(
+      'contact-1',
+      jasmine.objectContaining({
+        email: 'jan@example.com',
+        phoneNumber: '123456789',
+      })
+    );
+    expect(uiFeedback.success).toHaveBeenCalledWith('Customer updated successfully.');
+
+    tick(701);
     expect(router.navigate).toHaveBeenCalledWith(['/', 'customers']);
-  });
+  }));
 
   it('should mark dateOfBirth as invalid when customer is not over 18', () => {
     component.form.patchValue({

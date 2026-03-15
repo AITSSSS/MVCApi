@@ -1,34 +1,29 @@
-<nav class="navbar">
-  <ul class="pagination justify-content-center nav">
-    <li *ngIf="hasPreviousPage" class="page-item" (click)="onPreviousPage()">
-      <span class="page-link">
-        <span>&laquo;</span>
-      </span>
-    </li>
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+  <div class="btn-group" role="group">
+    <button class="btn btn-outline-secondary" type="button" *ngIf="hasPreviousPage" (click)="onPreviousPage()">
+      &laquo;
+    </button>
 
-    <li *ngFor="let item of rangeWithDots" class="page-item" (click)="onPageChange(item)">
-      <span class="page-link">{{ item }}</span>
-    </li>
+    <button
+      class="btn"
+      [ngClass]="item === pageIndex ? 'btn-primary' : 'btn-outline-secondary'"
+      type="button"
+      *ngFor="let item of rangeWithDots"
+      [disabled]="item === '...'"
+      (click)="onPageChange(item)"
+    >
+      {{ item }}
+    </button>
 
-    <li *ngIf="hasNextPage" oclassName="page-item" (click)="onNextPage()">
-      <span class="page-link">
-        <span>&raquo;</span>
-      </span>
-    </li>
-  </ul>
+    <button class="btn btn-outline-secondary" type="button" *ngIf="hasNextPage" (click)="onNextPage()">
+      &raquo;
+    </button>
+  </div>
 
-  <ul class="ms-auto nav justify-content-end">
-    <li class="form-group">
-      <label class="form-check-label">Page size</label>
-      <select class="form-control" (change)="onPageSizeChanged($event)">
-        <option
-          *ngFor="let size of allowedPageSizes"
-          [value]="size"
-          [selected]="size == pageSize"
-        >
-          {{ size }}
-        </option>
-      </select>
-    </li>
-  </ul>
-</nav>
+  <div class="d-flex align-items-center gap-2">
+    <label class="form-label mb-0" for="pageSizeSelect">Page size</label>
+    <select id="pageSizeSelect" class="form-select form-select-sm" style="width: 120px" [value]="pageSize" (change)="onPageSizeChanged($event)">
+      <option *ngFor="let size of allowedPageSizes" [value]="size">{{ size }}</option>
+    </select>
+  </div>
+</div>

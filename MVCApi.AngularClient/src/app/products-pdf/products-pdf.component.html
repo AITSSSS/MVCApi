@@ -1,20 +1,26 @@
+<div class="card mb-3">
+  <div class="card-body">
+    <h5 class="card-title">Export price list</h5>
+    <p class="text-muted">Create a PDF snapshot of currently visible products.</p>
 
-<div class="btn btn-primary mt-1" title="Share As PDF" (click)="downloadAsPDF()">Export to pdf</div>
-<div class="collapse" id="collapseExample">
-    <div class="card card-body">
-        <div id="pdfTable" #pdfTable *ngIf="products" class="col-lg-9 table">
-            <table class="table table-bordered" style="width: 100%; font-size: 12px;">
-                <tr style="width: 100%;">
-                    <th>Name</th>
-                    <th>Price</th>
-                </tr>
-                <tr style="width: 100%;" *ngFor="let product of (products | async)?.items">
-                    <td style="width: 50%;">{{product.name}}</td>
-                    <td style="width: 50%;">{{product.price?.value | currency: currency}}</td>
-                </tr>
-            </table>
-        </div>
-        <div class="btn btn-primary mt-1" title="Share As PDF" (click)="downloadAsPDF()">Export to pdf</div>
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
+    <div id="pdfTable" #pdfTable *ngIf="products" class="table-responsive">
+      <table class="table table-sm align-middle">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of (products | async)?.items">
+            <td>{{ product.name }}</td>
+            <td>{{ product.price?.value | currency: currency }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  </div>
+  <div class="card-footer bg-transparent text-end">
+    <button class="btn btn-outline-primary btn-sm" type="button" (click)="downloadAsPDF()">Export to PDF</button>
+  </div>
 </div>

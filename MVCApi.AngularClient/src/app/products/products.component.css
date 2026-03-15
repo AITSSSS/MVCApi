@@ -18,3 +18,29 @@
   font-weight: bold;
   font-size: 140%;
 }
+
+.products-page {
+  display: block;
+}
+
+@media (min-width: 992px) {
+  .products-page {
+    display: flex;
+  }
+}
+
+.products-main {
+  min-width: 0;
+}
+
+.product-list {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 960px) {
+  .products-page {
+    display: block;
+  }
+}

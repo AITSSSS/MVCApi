@@ -1,29 +1,37 @@
-<div class="row mt-4 mt-4 border-top col-md-2">
-    <button class="btn btn-outline-secondary" (click)="copyMessage()" value="click to copy" >Copy HTML code</button>
-</div>
-<div *ngIf="product" class="row mt-4 mt-4 border-top">
-    <div class="col-md-4">
-      <img
-        *ngIf="!product.image?.startsWith('http')"
-        src="{{ '/assets' + product.image }}"
-        alt="{{ product.name + '_image' }}"
-        class="img-fluid"
-      />
-      <img
-        *ngIf="product.image?.startsWith('http')"
-        src="{{ product.image }}"
-        alt="{{ product.name + '_image' }}"
-        class="img-fluid"
-      />
-    </div>
-    <div class="col-md-6 product-detail">
-      <h4>{{ product.name }}</h4>
-      <div [innerHTML]="product.description"></div>
-    </div>
-    <div
-      *ngIf="product.price && product.price.currency"
-      class="col-md-2 product-price"
-    >
-      {{ product.price.value | currency: currency }}
+<section class="details-page" *ngIf="product">
+  <div class="card">
+    <div class="card-body">
+      <div class="text-end mb-3">
+        <button class="btn btn-outline-secondary btn-sm" type="button" (click)="copyMessage()">Copy HTML code</button>
+      </div>
+
+      <div class="row g-3 align-items-start">
+        <div class="col-md-3">
+          <img
+            *ngIf="!product.image?.startsWith('http')"
+            [src]="'/assets' + product.image"
+            alt="{{ product.name + '_image' }}"
+            class="img-fluid rounded"
+          />
+          <img
+            *ngIf="product.image?.startsWith('http')"
+            [src]="product.image"
+            alt="{{ product.name + '_image' }}"
+            class="img-fluid rounded"
+          />
+        </div>
+
+        <div class="col-md-7">
+          <h2>{{ product.name }}</h2>
+          <div [innerHTML]="product.description"></div>
+        </div>
+
+        <div class="col-md-2 fw-semibold text-nowrap">
+          <span *ngIf="product.price && product.price.currency">
+            {{ product.price.value | currency: currency }}
+          </span>
+        </div>
+      </div>
     </div>
   </div>
+</section>

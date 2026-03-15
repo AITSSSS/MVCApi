@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { getLocaleCurrencyCode, registerLocaleData } from '@angular/common';
@@ -25,7 +25,7 @@ describe('ProductEditComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ ProductEditComponent ],
       imports: [ HttpClientTestingModule, RouterTestingModule.withRoutes([]) ],
-      providers: [ { provide: ActivatedRoute, useValue: mockActivatedRoute } ] 
+      providers: [ { provide: ActivatedRoute, useValue: mockActivatedRoute } ]
     })
     .compileComponents();
   });
@@ -51,7 +51,7 @@ describe('ProductEditComponent', () => {
       .toHaveBeenCalled();
   });
 
-  it('submit() should add an edited product', () => {
+  it('submit() should add an edited product', fakeAsync(() => {
     component.form = {
       value: {
         name: 'fakeP',
@@ -69,10 +69,13 @@ describe('ProductEditComponent', () => {
 
     expect((component as any).productService.apiProductEditProductIdPut)
       .toHaveBeenCalledOnceWith(component.productId, component.form.value);
-    
+    expect(component.isSaving).toBeFalse();
+    expect(component.saveStatus).toBe('saved');
+
+    tick(701);
     expect((component as any).router.navigate)
       .toHaveBeenCalledOnceWith(['/', 'products']);
-  });
+  }));
 
   it('submit() should try to add an edited product but fail', () => {
     component.form = {
@@ -87,7 +90,7 @@ describe('ProductEditComponent', () => {
 
     expect((component as any).productService.apiProductEditProductIdPut)
       .not.toHaveBeenCalledOnceWith(component.productId, component.form.value);
-    
+
     expect((component as any).router.navigate)
       .not.toHaveBeenCalledOnceWith(['/', 'products']);
   });
@@ -97,7 +100,7 @@ describe('ProductEditComponent', () => {
       id: '123'
     } as any;
     const fakeObservable = of(fakeProductDto);
-    
+
     spyOn((component as any).productService, 'apiProductGetProductByIdIdGet')
       .and.returnValue(fakeObservable);
     spyOn(component.form, 'patchValue')
@@ -110,7 +113,7 @@ describe('ProductEditComponent', () => {
 
     expect(component.product)
       .toBe(fakeObservable);
-      
+
     expect(component.form.patchValue)
         .toHaveBeenCalledTimes(3);
   });

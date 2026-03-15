@@ -25,3 +25,23 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## UX foundation implemented
+
+The frontend now includes a global UX feedback layer:
+
+- Angular Material top navigation shell and global loading indicator.
+- HTTP interceptor-level error notifications for failed requests.
+- Snackbar success/error messaging via a shared UI feedback service.
+- Confirm dialog for destructive actions (for example, removing product from cart and canceling order).
+- Light/Dark theme toggle in the top bar (default startup theme is always light).
+
+## Quick verification
+
+Run targeted tests used for the current UX/theme implementation:
+
+```bash
+npm test -- --watch=false --browsers=ChromeHeadless --include src/app/theme.service.spec.ts --include src/app/ui-feedback.service.spec.ts --include src/app/products/products.component.spec.ts --include src/app/checkout/checkout.component.spec.ts --include src/app/order/order.component.spec.ts
+```
+
+Note: current `npm run build` script uses `--localize`. If `@angular/localize` is not installed in your environment, use `npx ng build --configuration development` for local compile checks.

@@ -32,8 +32,6 @@ import {
 import { SignOutComponent } from './sign-out/sign-out.component';
 import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { registerLocaleData } from '@angular/common';
 import { PaginationComponent } from './pagination/pagination.component';
 import { CheckoutComponent } from './checkout/checkout.component';
@@ -50,7 +48,6 @@ import { OrderComponent } from './order/order.component';
 import { ProductDetailsComponent } from './product-details/product-details.component';
 import { ProductsPdfComponent } from './products-pdf/products-pdf.component';
 import { RegistrationComponent } from './registration/registration.component';
-
 
 import(
   /* webpackExclude: /\.d\.ts$/ */
@@ -83,7 +80,7 @@ import(
     OrderComponent,
     ProductDetailsComponent,
     ProductsPdfComponent,
-    RegistrationComponent
+    RegistrationComponent,
 
   ],
   imports: [
@@ -93,19 +90,14 @@ import(
     ReactiveFormsModule,
     FormsModule,
     BrowserAnimationsModule,
-    MatProgressSpinnerModule,
-    MatPaginatorModule,
-    NgxChartsModule
+    NgxChartsModule,
   ],
   providers: [
     { provide: BASE_PATH, useValue: 'http://localhost:5000' },
     {
       provide: HTTP_INTERCEPTORS,
-      useFactory: (router: Router) => {
-        return new AuthInterceptor(router);
-      },
+      useClass: AuthInterceptor,
       multi: true,
-      deps: [Router],
     },
     {
       provide: UserService,

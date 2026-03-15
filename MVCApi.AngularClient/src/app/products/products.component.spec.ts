@@ -7,22 +7,35 @@ import { ActivatedRoute } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import localePl from '@angular/common/locales/pl';
 import { ProductsComponent } from './products.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { UiFeedbackService } from '../ui-feedback.service';
 
 registerLocaleData(localePl, 'pl-PL');
 
 describe('ProductsComponent', () => {
   let component: ProductsComponent;
   let fixture: ComponentFixture<ProductsComponent>;
+  let uiFeedback: jasmine.SpyObj<UiFeedbackService>;
 
   beforeEach(async () => {
     const mockActivatedRoute = {
       queryParams: of({ categoryId: '123'})
       }
 
+    uiFeedback = jasmine.createSpyObj<UiFeedbackService>('UiFeedbackService', [
+      'success',
+      'error',
+      'confirmDestructive',
+    ]);
+
     await TestBed.configureTestingModule({
       declarations: [ ProductsComponent ],
       imports: [ HttpClientTestingModule, RouterTestingModule.withRoutes([]) ],
-      providers: [ { provide: ActivatedRoute, useValue: mockActivatedRoute } ]
+      providers: [
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: UiFeedbackService, useValue: uiFeedback },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
       })
       .compileComponents();
     });
@@ -59,7 +72,7 @@ describe('ProductsComponent', () => {
 
   it('should page index change', () => {
     spyOn((component as any), 'fetchProducts');
-    
+
     component.pageIndexChange();
 
     expect((component as any).fetchProducts)
@@ -68,7 +81,7 @@ describe('ProductsComponent', () => {
 
   it('should total pages change', () => {
     spyOn((component as any), 'fetchProducts');
-    
+
     component.totalPagesChange();
 
     expect((component as any).fetchProducts)
@@ -77,7 +90,7 @@ describe('ProductsComponent', () => {
 
   it('should page size change', () => {
     spyOn((component as any), 'fetchProducts');
-    
+
     component.pageSizeChange();
 
     expect((component as any).fetchProducts)
@@ -91,7 +104,6 @@ describe('ProductsComponent', () => {
       .and.returnValue(Promise.resolve(fakeCart));
     spyOn((component as any).cartService, 'apiCartAddProductToCartPut')
       .and.returnValue(of('123'));
-    spyOn(console, 'log');
 
     component.addToCart('1');
     tick();
@@ -100,14 +112,14 @@ describe('ProductsComponent', () => {
       .toHaveBeenCalled();
     expect((component as any).cartService.apiCartAddProductToCartPut)
       .toHaveBeenCalledOnceWith({ cartId: fakeCart?.id, productId: '1', count: 1 });
-    expect(console.log)
-      .toHaveBeenCalledOnceWith('Added');
+    expect(uiFeedback.success)
+      .toHaveBeenCalledWith('Product added to cart.');
   }));
 
   it('product does not get added to card because of no id', () => {
     spyOn((component as any).shoppingCartService, 'getOrCreateCart');
     spyOn((component as any).cartService, 'apiCartAddProductToCartPut');
-    
+
     component.addToCart(undefined);
 
     expect((component as any).shoppingCartService.getOrCreateCart).not.toHaveBeenCalled();
@@ -121,7 +133,6 @@ describe('ProductsComponent', () => {
       .and.returnValue(Promise.resolve(fakeCart));
     spyOn((component as any).cartService, 'apiCartAddProductToCartPut')
       .and.returnValue(throwError(() => new Error('Fake error')));
-    spyOn(console, 'log');
 
     component.addToCart('1');
     tick();
@@ -130,8 +141,8 @@ describe('ProductsComponent', () => {
       .toHaveBeenCalled();
     expect((component as any).cartService.apiCartAddProductToCartPut)
       .toHaveBeenCalledOnceWith({ cartId: fakeCart?.id, productId: '1', count: 1 });
-    expect(console.log)
-      .toHaveBeenCalledOnceWith(jasmine.any(Error));
+    expect(uiFeedback.error)
+      .toHaveBeenCalledWith('Could not add product to cart.');
   }));
 
   it('should fetch products with a categoryId', () => {
@@ -140,14 +151,11 @@ describe('ProductsComponent', () => {
 
     spyOn((component as any).productService, 'apiProductGetPaginatedProductsByCategoryGet')
       .and.returnValue(of({}));
-    spyOn(console, 'log');
 
     (component as any).fetchProducts();
 
     expect((component as any).productService.apiProductGetPaginatedProductsByCategoryGet)
       .toHaveBeenCalledOnceWith(jasmine.any(Number), jasmine.any(Number), fakeCurrCode, component.categoryId);
-    expect(console.log)
-      .toHaveBeenCalled();  
   });
 
   it('should fetch products without categoryId', () => {
@@ -156,13 +164,11 @@ describe('ProductsComponent', () => {
 
     spyOn((component as any).productService, 'apiProductGetPaginatedProductsGet')
       .and.returnValue(of({}));
-    spyOn(console, 'log');
 
     (component as any).fetchProducts();
 
     expect((component as any).productService.apiProductGetPaginatedProductsGet)
       .toHaveBeenCalledOnceWith(jasmine.any(Number), jasmine.any(Number), fakeCurrCode);
-    expect(console.log)
-      .toHaveBeenCalled();  
   });
 });
+
