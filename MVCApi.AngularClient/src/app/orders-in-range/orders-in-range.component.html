@@ -10,8 +10,9 @@
             id="startDate"
             class="form-control"
             type="date"
-            [ngModel]="startDateSubject | async"
-            (ngModelChange)="startDateSubject.next($event)"
+            [ngModel]="startDateInput"
+            [max]="maxStartDateInput"
+            (ngModelChange)="onStartDateChange($event)"
           />
         </div>
         <div class="col-md-4">
@@ -20,10 +21,15 @@
             id="endDate"
             class="form-control"
             type="date"
-            [ngModel]="endDateSubject | async"
-            (ngModelChange)="endDateSubject.next($event)"
+            [ngModel]="endDateInput"
+            [min]="minEndDateInput"
+            (ngModelChange)="onEndDateChange($event)"
           />
         </div>
+      </div>
+
+      <div class="small text-muted mb-3" *ngIf="rangeAdjustedNotice">
+        Date range auto-adjusted to keep start date before or equal to end date.
       </div>
 
       <div class="chart-wrap">

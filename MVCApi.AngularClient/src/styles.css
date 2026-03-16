@@ -33,6 +33,19 @@ body.dark-theme .text-muted {
   color: #c0c0c0 !important;
 }
 
+:root {
+  --bs-primary: #0b2d6b;
+  --bs-primary-rgb: 11, 45, 107;
+  --bs-link-color: #0b2d6b;
+  --bs-link-hover-color: #123f8e;
+}
+
+body.dark-theme .bg-primary,
+body.dark-theme .btn-primary {
+  background-color: #0b2d6b !important;
+  border-color: #0b2d6b !important;
+}
+
 .page-shell,
 .form-page,
 .details-page {

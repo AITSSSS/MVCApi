@@ -12,7 +12,7 @@ import { UiFeedbackService } from '../ui-feedback.service';
 })
 export class OrderComponent implements OnInit {
   order: Observable<OrderDto> | null = null;
-  currency: string = getLocaleCurrencyCode(navigator.language) ?? 'PLN';
+  currency: string = this.resolveCurrency();
   selectedIdx: number = 0;
 
   private orderId: string | null = null;
@@ -27,7 +27,7 @@ export class OrderComponent implements OnInit {
       this.orderId = orderId;
       this.order = this.orderService.apiOrderGetOrderByIdIdGet(
         orderId,
-        getLocaleCurrencyCode(navigator.language) ?? 'PLN'
+        this.currency
       );
     }
   }
@@ -39,11 +39,17 @@ export class OrderComponent implements OnInit {
       return;
     }
 
+    const selectedState = Number(this.selectedIdx) as OrderState;
+    if (Number.isNaN(selectedState)) {
+      this.uiFeedback.error('Select a valid order state first.');
+      return;
+    }
+
     const applyStateChange = () => {
       this.orderService
         .apiOrderChangeStatePut({
           orderId: this.orderId!,
-          state: this.selectedIdx as OrderState,
+          state: selectedState,
         })
         .subscribe({
           next: () => this.uiFeedback.success('Order state has been updated.'),
@@ -51,7 +57,7 @@ export class OrderComponent implements OnInit {
         });
     };
 
-    if (this.selectedIdx === OrderState.Cancelled) {
+    if (selectedState === OrderState.Cancelled) {
       this.uiFeedback
         .confirmDestructive(
           'Canceling an order is destructive and may be irreversible. Continue?',
@@ -66,5 +72,13 @@ export class OrderComponent implements OnInit {
     }
 
     applyStateChange();
+  }
+
+  private resolveCurrency(): string {
+    try {
+      return getLocaleCurrencyCode(navigator.language) ?? 'PLN';
+    } catch {
+      return 'PLN';
+    }
   }
 }

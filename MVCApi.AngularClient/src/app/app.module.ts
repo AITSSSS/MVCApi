@@ -48,6 +48,7 @@ import { OrderComponent } from './order/order.component';
 import { ProductDetailsComponent } from './product-details/product-details.component';
 import { ProductsPdfComponent } from './products-pdf/products-pdf.component';
 import { RegistrationComponent } from './registration/registration.component';
+import { HomeComponent } from './home/home.component';
 
 import(
   /* webpackExclude: /\.d\.ts$/ */
@@ -61,6 +62,7 @@ import(
 @NgModule({
   declarations: [
     AppComponent,
+    HomeComponent,
     CustomersComponent,
     CustomerFormComponent,
     CustomerEditComponent,

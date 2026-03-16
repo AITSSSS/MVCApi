@@ -1,6 +1,6 @@
 import { getLocaleCurrencyCode } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, forkJoin, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest } from 'rxjs';
 import { OrderDto, OrderService, ProductDto } from 'src/api';
 
 interface ChartPoint {
@@ -26,9 +26,10 @@ export class OrdersInRangeComponent implements OnInit {
 
   orders: OrderDto[] | null = null;
   private orderMap: Map<Date, Map<ProductDto, number>> | null = null;
-  private dateArray: Date[] | null = null;
-  
+
   chartData: ChartData[] | null = null;
+  rangeAdjustedNotice: boolean = false;
+  private noticeTimeoutId: number | null = null;
 
   constructor(private readonly orderService: OrderService) {
     combineLatest({
@@ -75,6 +76,73 @@ export class OrdersInRangeComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+  get startDateInput(): string {
+    return this.toInputDate(this.startDateSubject.value);
+  }
+
+  get endDateInput(): string {
+    return this.toInputDate(this.endDateSubject.value);
+  }
+
+  get maxStartDateInput(): string {
+    return this.endDateInput;
+  }
+
+  get minEndDateInput(): string {
+    return this.startDateInput;
+  }
+
+  onStartDateChange(value: string): void {
+    const nextStartDate = this.fromInputDate(value);
+    if (!nextStartDate) return;
+
+    const currentEndDate = this.endDateSubject.value;
+    this.startDateSubject.next(nextStartDate);
+
+    // Keep range valid when start moves past end.
+    if (nextStartDate > currentEndDate) {
+      this.endDateSubject.next(nextStartDate);
+      this.showRangeAdjustedNotice();
+    }
+  }
+
+  onEndDateChange(value: string): void {
+    const nextEndDate = this.fromInputDate(value);
+    if (!nextEndDate) return;
+
+    const currentStartDate = this.startDateSubject.value;
+    this.endDateSubject.next(nextEndDate);
+
+    // Keep range valid when end moves before start.
+    if (nextEndDate < currentStartDate) {
+      this.startDateSubject.next(nextEndDate);
+      this.showRangeAdjustedNotice();
+    }
+  }
+
+  private toInputDate(value: Date): string {
+    return value.toISOString().slice(0, 10);
+  }
+
+  private fromInputDate(value: string): Date | null {
+    if (!value) return null;
+    const parsed = new Date(`${value}T00:00:00`);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  private showRangeAdjustedNotice(): void {
+    this.rangeAdjustedNotice = true;
+
+    if (this.noticeTimeoutId !== null) {
+      window.clearTimeout(this.noticeTimeoutId);
+    }
+
+    this.noticeTimeoutId = window.setTimeout(() => {
+      this.rangeAdjustedNotice = false;
+      this.noticeTimeoutId = null;
+    }, 2500);
+  }
 
   private createChartData() {
     var chartData: ChartData[] = new Array<ChartData>();

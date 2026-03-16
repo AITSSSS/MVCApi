@@ -19,10 +19,10 @@
         <div class="col-md-4">
           <label class="form-label" for="orderState">State</label>
           <select id="orderState" class="form-select" [(ngModel)]="selectedIdx">
-            <option [value]="0">New</option>
-            <option [value]="1">InProgress</option>
-            <option [value]="2">Ended</option>
-            <option [value]="3">Cancelled</option>
+            <option [ngValue]="0">New</option>
+            <option [ngValue]="1">InProgress</option>
+            <option [ngValue]="2">Ended</option>
+            <option [ngValue]="3">Cancelled</option>
           </select>
         </div>
         <div class="col-md-4">
