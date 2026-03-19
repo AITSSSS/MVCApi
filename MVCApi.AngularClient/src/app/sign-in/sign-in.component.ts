@@ -45,7 +45,7 @@ export class SignInComponent implements OnInit {
 
   submit() {
     this.message = '';
-    const email = this.form.value.email.trim();
+    const email = this.form.value.email.trim().toLowerCase();
     if (this.form.valid) {
       this.authService.login(
         email,
@@ -70,10 +70,10 @@ export class SignInComponent implements OnInit {
       });
     } else {
       if(!emailRegex.test(email)) {
-        this.message = 'Bad email';
+        this.message = 'Bad email.';
       }
       else if(!this.form.value.password) {
-        this.message = 'No password';
+        this.message = 'No password.';
       }
     }
   }

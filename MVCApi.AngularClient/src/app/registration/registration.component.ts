@@ -26,23 +26,23 @@ export class RegistrationComponent implements OnInit {
     if (this.form.valid) {
       this.userService.apiUserCreateUserPost(this.form.value).subscribe({
         next: () => {
-          this.message = 'Successfully created user account';
+          this.message = 'Successfully created user account.';
           this.successfulRegistration = true;
         },
         error: (e) => {
           console.log(e);
-          this.message = 'Failed to create user account';
+          this.message = 'Failed to create user account.';
         },
       });
     } else {
       if (!this.form.value.userName) {
-        this.message = 'No username';
+        this.message = 'No username.';
       }
       else if(!emailRegex.test(this.form.value.email)) {
-        this.message = 'Bad email';
+        this.message = 'Bad email.';
       }
       else if(!this.form.value.password) {
-        this.message = 'No password';
+        this.message = 'No password.';
       }
     }
   }
