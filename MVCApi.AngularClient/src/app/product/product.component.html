@@ -1,26 +1,29 @@
-<div *ngIf="product" class="row">
-  <div class="col-md-2">
+<article *ngIf="product" class="row g-3 align-items-start">
+  <div class="col-auto">
     <img
       *ngIf="!product.image?.startsWith('http')"
       [src]="base64Image"
       alt="{{ product.name + '_image' }}"
-      class="img-fluid"
+      class="rounded"
+      style="width: 100px; height: 100px; object-fit: cover;"
     />
     <img
       *ngIf="product.image?.startsWith('http')"
       [src]="base64Image"
       alt="{{ product.name + '_image' }}"
-      class="img-fluid"
+      class="rounded"
+      style="width: 100px; height: 100px; object-fit: cover;"
     />
   </div>
-  <div class="col-md-6 product-detail">
-    <h4 [routerLink]="['/', 'products', 'details', product.id]">{{ product.name }}</h4>
+
+  <div class="col">
+    <h5 class="mb-1" [routerLink]="['/', 'products', 'details', product.id]" style="cursor: pointer;">
+      {{ product.name }}
+    </h5>
     <div [innerHTML]="product.description"></div>
   </div>
-  <div
-    *ngIf="product.price && product.price.currency"
-    class="col-md-2 product-price"
-  >
+
+  <div *ngIf="product.price && product.price.currency" class="col-auto fw-semibold text-nowrap">
     {{ product.price.value | currency: currency }}
   </div>
-</div>
+</article>

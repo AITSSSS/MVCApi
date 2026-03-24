@@ -1,50 +1,37 @@
-<form class="mb-2" [formGroup]="form" (ngSubmit)="submit()">
-  <div class="row">
-    <div class="form-group col">
-      <label for="name">Product name</label>
-      <input
-        class="form-control"
-        id="name"
-        name="name"
-        type="text"
-        formControlName="name"
-        [ngClass]="{ 'is-invalid': submitted && f['name'].errors }"
-        required
-      />
-      <div *ngIf="submitted && f['name'].errors" class="invalid-feedback">
-        <div *ngIf="f['name'].errors['required']">Name is required</div>
-      </div>
-      </div>
+<section class="form-page">
+  <div class="card">
+    <div class="card-body">
+      <h3 class="card-title mb-3">Edit product</h3>
 
-    <div class="form-group col">
-      <label for="description">Product description</label>
-      <input
-        class="form-control"
-        name="description"
-        type="text"
-        formControlName="description"
-        [ngClass]="{ 'is-invalid': submitted && f['description'].errors }"
-        required
-      />
-      <div *ngIf="submitted && f['description'].errors" class="invalid-feedback">
-        <div *ngIf="f['description'].errors['required']">Description is required</div>
-      </div>
-    </div>
+      <form [formGroup]="form" (ngSubmit)="submit()" class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label" for="editProductName">Product name</label>
+          <input id="editProductName" class="form-control" type="text" formControlName="name" />
+          <div class="invalid-feedback d-block" *ngIf="submitted && f['name'].errors?.['required']">Name is required</div>
+        </div>
 
-    <div class="form-group col">
-      <label for="image">Prouct image</label>
-      <input
-        class="form-control"
-        name="image"
-        type="text"
-        formControlName="image"
-        [ngClass]="{ 'is-invalid': submitted && f['image'].errors }"
-        required
-      />
-      <div *ngIf="submitted && f['image'].errors" class="invalid-feedback">
-        <div *ngIf="f['image'].errors['required']">Image is required</div>
-      </div>
+        <div class="col-md-4">
+          <label class="form-label" for="editProductDescription">Description</label>
+          <input id="editProductDescription" class="form-control" type="text" formControlName="description" />
+          <div class="invalid-feedback d-block" *ngIf="submitted && f['description'].errors?.['required']">Description is required</div>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label" for="editProductImage">Image path or URL</label>
+          <input id="editProductImage" class="form-control" type="text" formControlName="image" />
+          <div class="invalid-feedback d-block" *ngIf="submitted && f['image'].errors?.['required']">Image is required</div>
+        </div>
+
+        <div class="col-12 d-flex justify-content-end align-items-center gap-3">
+          <div class="text-muted d-flex align-items-center gap-2" *ngIf="isSaving">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span>Saving...</span>
+          </div>
+          <div class="text-success" *ngIf="saveStatus === 'saved'">Saved</div>
+          <div class="text-danger" *ngIf="saveStatus === 'error'">Save failed</div>
+          <button class="btn btn-primary" type="submit" [disabled]="isSaving">Save changes</button>
+        </div>
+      </form>
     </div>
   </div>
-  <button class="button btn btn-primary" type="submit">Submit</button>
-</form>
+</section>

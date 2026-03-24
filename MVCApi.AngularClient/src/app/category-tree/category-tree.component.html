@@ -1,12 +1,13 @@
-<ul class="list-group">
-  <li *ngIf="category" class="list-group-item list-group-item-action">
-    <a
-      class="text-decoration-none font-weight-bold text-reset category-tree-element"
-      [routerLink]="['/products']" [queryParams]="{ categoryId: category.id }"
-      >{{ category.name }}</a
-    >
-    <div *ngFor="let child of category.children">
-      <app-category-tree [category]="child"></app-category-tree>
-    </div>
-  </li>
-</ul>
+<div *ngIf="category" class="list-group">
+  <a
+    class="list-group-item list-group-item-action fw-semibold"
+    [routerLink]="['/products']"
+    [queryParams]="{ categoryId: category.id }"
+  >
+    {{ category.name }}
+  </a>
+
+  <div class="ms-3 mt-1" *ngFor="let child of category.children">
+    <app-category-tree [category]="child"></app-category-tree>
+  </div>
+</div>

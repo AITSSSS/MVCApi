@@ -1,0 +1,21 @@
+.order-card {
+  margin-top: 12px;
+}
+
+.order-row {
+  display: grid;
+  grid-template-columns: 1fr 120px 160px;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.order-head {
+  font-weight: 600;
+}
+
+.state-row {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}

@@ -1,11 +1,21 @@
-<div class="row">
-  <p class="col-md-3"><a [routerLink]="['/', 'customers', 'add']" class='btn btn-primary ml-2'>Add customer</a></p>
-</div>
-<div *ngFor="let customer of $customers | async" class="rounded border p-2">
-  <div class="row">
-    <p class="col-md-3">First name: {{customer.firstName}}</p>
-    <p class="col-md-3">Last name: {{customer.lastName}}</p>
-    <p class="col-md-3">Date of birth: {{customer.dateOfBirth | date}}</p>
-    <p class="col-md-3"><a [routerLink]="['/', 'customers', 'edit', customer.id]" class='btn btn-primary ml-2'>Edit</a></p>
-  </div> 
-</div>
+<section class="page-shell">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="m-0">Customers</h2>
+    <a class="btn btn-primary" [routerLink]="['/', 'customers', 'add']">Add customer</a>
+  </div>
+
+  <div class="d-grid gap-3">
+    <div class="card" *ngFor="let customer of $customers | async">
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-md-4"><strong>First name:</strong> {{ customer.firstName }}</div>
+          <div class="col-md-4"><strong>Last name:</strong> {{ customer.lastName }}</div>
+          <div class="col-md-4"><strong>Date of birth:</strong> {{ customer.dateOfBirth | date }}</div>
+        </div>
+      </div>
+      <div class="card-footer bg-transparent text-end">
+        <a class="btn btn-outline-primary btn-sm" [routerLink]="['/', 'customers', 'edit', customer.id]">Edit</a>
+      </div>
+    </div>
+  </div>
+</section>

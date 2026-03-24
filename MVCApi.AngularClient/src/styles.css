@@ -1,4 +1,96 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body.light-theme {
+  background-color: #fafafa;
+  color: #1f1f1f;
+}
+
+body.dark-theme {
+  background-color: #1e1e1e;
+  color: #e2e2e2;
+}
+
+body.dark-theme .card,
+body.dark-theme .list-group-item,
+body.dark-theme .table {
+  background-color: #2b2b2b;
+  color: #e2e2e2;
+  border-color: #3a3a3a;
+}
+
+body.dark-theme .text-muted {
+  color: #c0c0c0 !important;
+}
+
+:root {
+  --bs-primary: #0b2d6b;
+  --bs-primary-rgb: 11, 45, 107;
+  --bs-link-color: #0b2d6b;
+  --bs-link-hover-color: #123f8e;
+}
+
+body.dark-theme .bg-primary,
+body.dark-theme .btn-primary {
+  background-color: #0b2d6b !important;
+  border-color: #0b2d6b !important;
+}
+
+.page-shell,
+.form-page,
+.details-page {
+  display: block;
+}
+
+.page-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.page-actions h2 {
+  margin: 0;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.entity-form {
+  display: grid;
+  gap: 12px;
+}
+
+.entity-form.grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.form-actions-full {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 960px) {
+  .entity-form.grid-2 {
+    grid-template-columns: 1fr;
+  }
+}

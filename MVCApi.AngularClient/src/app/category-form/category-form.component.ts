@@ -17,10 +17,10 @@ export class CategoryFormComponent implements OnInit {
   });
   submitted : boolean = false;
   isSubCategory : boolean = false;
-  parent : any = null;
-  checked : boolean = false;
+  isSaving: boolean = false;
+  saveStatus: 'idle' | 'saved' | 'error' = 'idle';
 
-  constructor( 
+  constructor(
     private readonly categoryService: CategoryService,
     private router: Router
     ) { }
@@ -35,33 +35,31 @@ export class CategoryFormComponent implements OnInit {
     return this.form.controls;
   }
 
-  toggleEditable(event: { target: { checked: any; }; }) {
-    if ( event.target.checked ) {
-      this.isSubCategory = true;
-    }
-    else {
-      this.isSubCategory = false;
-    }
-    console.log(this.isSubCategory);
+  toggleEditable(event: { target: { checked: boolean; }; }) {
+    this.isSubCategory = event.target.checked;
   }
-
 
   submit():void{
     if (this.form.valid) {
-      //If is not a child
+      this.isSaving = true;
+      this.saveStatus = 'idle';
+
       var createCategory: CreateCategory = this.form.value;
       if(this.form.get('isChild')?.value===false){
         this.categoryService
         .apiCategoryCreateCategoryPost(createCategory)
         .subscribe({
           next: () => {
-            this.router.navigate(['/', 'categories']);
-            console.log('Added')
+            this.isSaving = false;
+            this.saveStatus = 'saved';
+            setTimeout(() => this.router.navigate(['/', 'categories']), 700);
           },
-          error: (err) => console.log(err),
+          error: () => {
+            this.isSaving = false;
+            this.saveStatus = 'error';
+          },
         });
       }
-      //If is a child
       else{
         var createSubcategory: CreateSubcategory = {name: this.form.get('name')?.value.toString(), parentId: this.form.get('parent')?.value.toString()}
 
@@ -69,13 +67,17 @@ export class CategoryFormComponent implements OnInit {
         .apiCategoryCreateSubcategoryPost(createSubcategory)
         .subscribe({
           next: () => {
-            this.router.navigate(['/', 'categories']);
-            console.log('Added sub')
+            this.isSaving = false;
+            this.saveStatus = 'saved';
+            setTimeout(() => this.router.navigate(['/', 'categories']), 700);
           },
-          error: (err) => console.log(err),
+          error: () => {
+            this.isSaving = false;
+            this.saveStatus = 'error';
+          },
         });
       }
-      
+
     }
   }
 }

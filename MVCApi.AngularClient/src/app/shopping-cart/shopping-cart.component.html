@@ -1,32 +1,39 @@
-<div *ngIf="isLoading" style="margin: 0 auto">
-  <mat-spinner></mat-spinner>
+<div *ngIf="isLoading" class="text-center">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
 </div>
-<div *ngIf="!isLoading && $cart" class="row">
-  <div class="col col-lg-10">
-    <div *ngFor="let product of $cart.products" class="row product">
-      <app-product class="col-md-10" [product]="product.product"></app-product>
-      <div class="col-md-1">
+
+<section *ngIf="!isLoading && $cart" class="row g-3">
+  <div class="col-lg-9 d-grid gap-3">
+    <div class="card" *ngFor="let product of $cart.products">
+      <div class="card-body">
+        <app-product [product]="product.product"></app-product>
+      </div>
+      <div class="card-footer bg-transparent d-flex justify-content-end align-items-center gap-2">
         <input
-          class="form-control input-sm"
+          class="form-control form-control-sm"
+          style="width: 110px"
           type="number"
           min="1"
           step="1"
-          value="{{ product.count }}"
+          [value]="product.count"
           (change)="onCountChange($event, product.product?.id)"
         />
-      </div>
-      <div class="col-md-1">
-        <button class="btn" (click)="removeFromCart(product.product?.id)">
-          <i class="bi bi-trash text-danger"></i>
+        <button class="btn btn-outline-danger btn-sm" type="button" (click)="removeFromCart(product.product?.id)">
+          <i class="bi bi-trash"></i>
         </button>
       </div>
     </div>
   </div>
-  <div class="col col-lg-2 product">
-    <h4>Total price:</h4>
-    <p className="product-price">
-      {{ total | currency: currency }}
-    </p>
-    <a class="btn btn-primary" routerLink="/checkout">Confirm order</a>
+
+  <div class="col-lg-3">
+    <div class="card">
+      <div class="card-body">
+        <h5>Total price</h5>
+        <p class="fw-semibold">{{ total | currency: currency }}</p>
+        <a class="btn btn-primary" routerLink="/checkout">Confirm order</a>
+      </div>
+    </div>
   </div>
-</div>
+</section>

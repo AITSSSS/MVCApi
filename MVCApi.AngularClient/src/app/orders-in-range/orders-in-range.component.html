@@ -1,51 +1,75 @@
-<div class="form-inline">
-  <div class="form-group">
-    <label>Choose start date</label>
-    <input
-      class="form-control"
-      type="date"
-      [ngModel]="startDateSubject | async"
-      (ngModelChange)="startDateSubject.next($event)"
-    />
-    <label>Choose end date</label>
-    <input
-      class="form-control"
-      type="date"
-      [ngModel]="endDateSubject | async"
-      (ngModelChange)="endDateSubject.next($event)"
-    />
-  </div>
-</div>
-<div class="d-flex justify-content-center">
-  <ngx-charts-line-chart
-    *ngIf="chartData"
-    [view]="[1000, 500]"
-    [legend]="true"
-    [showXAxisLabel]="true"
-    [showYAxisLabel]="true"
-    [xAxis]="true"
-    [yAxis]="true"
-    [xAxisLabel]="'Year'"
-    [yAxisLabel]="'Count'"
-    [timeline]="true"
-    [results]="chartData"
-  >
-  </ngx-charts-line-chart>
-</div>
+<section class="analytics-page d-grid gap-3">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Orders in date range</h5>
 
-<div class="mt-2">
-  <table class="table">
-    <thead>
-      <th>Order id</th>
-      <th>Date</th>
-    </thead>
-    <tbody>
-      <tr *ngFor="let order of orders">
-        <td>
-          <a [routerLink]="['/order', order.id]">{{ order.id }}</a>
-        </td>
-        <td>{{ order.dateCreated }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+      <div class="row g-2 mb-3">
+        <div class="col-md-4">
+          <label class="form-label" for="startDate">Start date</label>
+          <input
+            id="startDate"
+            class="form-control"
+            type="date"
+            [ngModel]="startDateInput"
+            [max]="maxStartDateInput"
+            (ngModelChange)="onStartDateChange($event)"
+          />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="endDate">End date</label>
+          <input
+            id="endDate"
+            class="form-control"
+            type="date"
+            [ngModel]="endDateInput"
+            [min]="minEndDateInput"
+            (ngModelChange)="onEndDateChange($event)"
+          />
+        </div>
+      </div>
+
+      <div class="small text-muted mb-3" *ngIf="rangeAdjustedNotice">
+        Date range auto-adjusted to keep start date before or equal to end date.
+      </div>
+
+      <div class="chart-wrap">
+        <ngx-charts-line-chart
+          *ngIf="chartData"
+          [view]="[1000, 500]"
+          [legend]="true"
+          [showXAxisLabel]="true"
+          [showYAxisLabel]="true"
+          [xAxis]="true"
+          [yAxis]="true"
+          [xAxisLabel]="'Year'"
+          [yAxisLabel]="'Count'"
+          [timeline]="true"
+          [results]="chartData"
+        >
+        </ngx-charts-line-chart>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Orders</h5>
+      <div class="table-responsive">
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Order id</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let order of orders">
+              <td><a [routerLink]="['/order', order.id]">{{ order.id }}</a></td>
+              <td>{{ order.dateCreated }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,8 +1,16 @@
-<div class="row mb-2">
-  <a class="btn btn-primary ml-2" [routerLink]="['/categories', 'add']" >Add new category</a>
-</div>
-<div class="row mb-4" >
-  <div class="col-md-4" *ngFor="let category of rootCategories | async">
-    <app-category-tree [category]="category"></app-category-tree>
+<section class="page-shell">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="m-0">Categories</h2>
+    <a class="btn btn-primary" [routerLink]="['/categories', 'add']">Add new category</a>
   </div>
-</div>
+
+  <div class="row g-3">
+    <div class="col-md-6 col-lg-4" *ngFor="let category of rootCategories | async">
+      <div class="card h-100">
+        <div class="card-body">
+          <app-category-tree [category]="category"></app-category-tree>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

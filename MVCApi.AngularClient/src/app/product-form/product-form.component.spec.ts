@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute } from '@angular/router';
@@ -45,7 +45,7 @@ describe('ProductFormComponent', () => {
       .not.toThrow();
   });
 
-  it('should correctly submit product', () => {
+  it('should correctly submit product', fakeAsync(() => {
     component.form = {
       value: {
         name: 'fakeP',
@@ -57,7 +57,7 @@ describe('ProductFormComponent', () => {
       valid: true,
       get: (field: string) => ({ value: 123 })
     } as any;
-    
+
     spyOn((component as any).productService, 'apiProductCreateProductPost')
       .and.returnValue(of('fakeObs'));
     spyOn((component as any).categoryService, 'apiCategoryAddProductToCategoryPut')
@@ -66,17 +66,20 @@ describe('ProductFormComponent', () => {
 
     component.submit();
 
+    expect(component.isSaving).toBeFalse();
+    expect(component.saveStatus).toBe('saved');
     expect((component as any).productService.apiProductCreateProductPost)
       .toHaveBeenCalledOnceWith(component.form.value);
-    
+
     expect((component as any).categoryService.apiCategoryAddProductToCategoryPut)
       .toHaveBeenCalledOnceWith({ productId: 'fakeObs', categoryId: '123'});
-    
+
+    tick(701);
     expect((component as any).router.navigate)
       .toHaveBeenCalledOnceWith(['/', 'products']);
-  });
+  }));
 
-  it('should throw error when submiting product', () => {
+  it('should set error state when submiting product fails', () => {
     component.form = {
       value: {
         name: 'fakeP',
@@ -87,17 +90,15 @@ describe('ProductFormComponent', () => {
       },
       valid: true
     } as any;
-    
+
     spyOn((component as any).productService, 'apiProductCreateProductPost')
       .and.returnValue(throwError(() => new Error('Fake error')));
-    spyOn(console, 'log');
 
     component.submit();
 
     expect((component as any).productService.apiProductCreateProductPost)
       .toHaveBeenCalledOnceWith(component.form.value);
-    
-    expect(console.log)
-      .toHaveBeenCalledOnceWith(jasmine.any(Error));
+    expect(component.isSaving).toBeFalse();
+    expect(component.saveStatus).toBe('error');
   });
 });

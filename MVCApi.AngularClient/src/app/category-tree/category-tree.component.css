@@ -3,3 +3,17 @@
   display: inline-block;
   height: 100%;
 }
+
+.category-list {
+  padding-top: 0;
+}
+
+.category-link {
+  font-weight: 500;
+}
+
+.category-children {
+  margin-left: 12px;
+  border-left: 1px solid rgba(0, 0, 0, 0.12);
+  padding-left: 8px;
+}

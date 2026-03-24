@@ -1,0 +1,36 @@
+.analytics-page {
+  display: grid;
+  gap: 16px;
+}
+
+.range-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.chart-wrap {
+  overflow-x: auto;
+}
+
+.order-row {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.orders-head {
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .range-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .order-row {
+    grid-template-columns: 1fr;
+  }
+}
+

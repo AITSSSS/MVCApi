@@ -1,0 +1,14 @@
+﻿<div class="modal-header">
+  <h5 class="modal-title">{{ data.title }}</h5>
+</div>
+<div class="modal-body">
+  <p class="mb-0">{{ data.message }}</p>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-outline-secondary" type="button" (click)="cancel()">
+    {{ data.cancelText || 'Cancel' }}
+  </button>
+  <button class="btn btn-danger" type="button" (click)="confirm()">
+    {{ data.confirmText || 'Confirm' }}
+  </button>
+</div>

@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { CartService, ShoppingCartDto } from 'src/api';
 import { ShoppingCartService } from '../shopping-cart.service';
+import { UiFeedbackService } from '../ui-feedback.service';
 
 @Component({
   selector: 'app-shopping-cart',
@@ -17,7 +18,8 @@ export class ShoppingCartComponent implements OnInit {
 
   constructor(
     private readonly service: ShoppingCartService,
-    private readonly cartService: CartService
+    private readonly cartService: CartService,
+    private readonly uiFeedback: UiFeedbackService
   ) {
     this.service.getOrCreateCart().then((cart) => {
       this.isLoading = false;
@@ -40,20 +42,29 @@ export class ShoppingCartComponent implements OnInit {
   removeFromCart(productId?: string | undefined) {
     if (!productId) return;
 
-    this.cartService
-      .apiCartRemoveProductDelete({
-        productId: productId,
-        cartId: this.$cart?.id,
-      })
-      .subscribe({
-        next: () => {
-          if (this.$cart)
-            this.$cart.products = this.$cart?.products?.filter(
-              (product) => product.product?.id !== productId
-            );
-          this.total = this.calculateTotal();
-        },
-        error: (err) => console.log(err),
+    this.uiFeedback
+      .confirmDestructive('Remove this product from your cart?', 'Remove product')
+      .subscribe((confirmed) => {
+        if (!confirmed) {
+          return;
+        }
+
+        this.cartService
+          .apiCartRemoveProductDelete({
+            productId: productId,
+            cartId: this.$cart?.id,
+          })
+          .subscribe({
+            next: () => {
+              if (this.$cart)
+                this.$cart.products = this.$cart?.products?.filter(
+                  (product) => product.product?.id !== productId
+                );
+              this.total = this.calculateTotal();
+              this.uiFeedback.success('Product removed from cart.');
+            },
+            error: () => this.uiFeedback.error('Could not remove product from cart.'),
+          });
       });
   }
 
@@ -77,8 +88,9 @@ export class ShoppingCartComponent implements OnInit {
             this.$cart.products[idx].count = newCount
           }
           this.total = this.calculateTotal();
+          this.uiFeedback.success('Product quantity updated.');
         },
-        error: (err) => console.log(err)
+        error: () => this.uiFeedback.error('Could not update product quantity.'),
       });
   }
 }

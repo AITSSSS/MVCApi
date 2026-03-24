@@ -19,8 +19,10 @@ import { ProductDetailsComponent } from './product-details/product-details.compo
 import { Observable } from 'rxjs';
 import { ProductsPdfComponent } from './products-pdf/products-pdf.component';
 import { RegistrationComponent } from './registration/registration.component';
+import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
+  { path: '', component: HomeComponent },
   { path: 'customers', component: CustomersComponent },
   { path: 'customers/add', component: CustomerFormComponent },
   { path: 'customers/edit/:customerId', component: CustomerEditComponent },

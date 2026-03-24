@@ -1,0 +1,58 @@
+﻿<section class="home-page">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="m-0">Home</h2>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title mb-1">Your orders</h5>
+      <p class="text-muted mb-0" *ngIf="user?.domainUserId">
+        Recent orders created with your current account.
+      </p>
+      <p class="text-muted mb-0" *ngIf="!user?.domainUserId">
+        Sign in and place an order to see your order history here.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="user?.domainUserId">
+    <div class="card-body">
+      <div class="text-center py-4" *ngIf="isLoading">
+        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+        <span class="ms-2">Loading orders...</span>
+      </div>
+
+      <div *ngIf="!isLoading && !hasOrders" class="alert alert-secondary mb-0">
+        No orders found yet.
+      </div>
+
+      <div class="table-responsive" *ngIf="!isLoading && hasOrders">
+        <table class="table align-middle mb-0">
+          <thead>
+            <tr>
+              <th scope="col">Order ID</th>
+              <th scope="col">Created</th>
+              <th scope="col">Status</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let order of orders">
+              <td>{{ order.id }}</td>
+              <td>{{ order.dateCreated | date: 'medium' }}</td>
+              <td>
+                <span class="badge bg-secondary">{{ getStatusLabel(order.orderState) }}</span>
+              </td>
+              <td class="text-end">
+                <a class="btn btn-outline-primary btn-sm" [routerLink]="['/order', order.id]">
+                  Details
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+

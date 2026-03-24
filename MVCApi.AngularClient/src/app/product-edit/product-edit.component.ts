@@ -12,7 +12,7 @@ import { AuthService } from '../auth.service';
   styleUrls: ['./product-edit.component.css']
 })
 export class ProductEditComponent implements OnInit {
-  
+
   form = new FormGroup({
     name: new FormControl('', Validators.required),
     description: new FormControl('', Validators.required),
@@ -29,6 +29,8 @@ export class ProductEditComponent implements OnInit {
   productId: string = "";
   product: Observable<ProductDto> | null = null;
   submitted : boolean = false;
+  isSaving: boolean = false;
+  saveStatus: 'idle' | 'saved' | 'error' = 'idle';
 
   ngOnInit(): void {
     this.productId = <string>this.route.snapshot.paramMap.get('productId')?.toString();
@@ -39,12 +41,20 @@ export class ProductEditComponent implements OnInit {
     this.submitted = true;
     var editCustomer: EditProduct = this.form.value;
     if (this.form.valid) {
+      this.isSaving = true;
+      this.saveStatus = 'idle';
+
       this.productService
         .apiProductEditProductIdPut(this.productId, editCustomer)
         .subscribe({
-          next: (res) => {
-            this.router.navigate(['/', 'products']);
-            console.log('Added')
+          next: () => {
+            this.isSaving = false;
+            this.saveStatus = 'saved';
+            setTimeout(() => this.router.navigate(['/', 'products']), 700);
+          },
+          error: () => {
+            this.isSaving = false;
+            this.saveStatus = 'error';
           },
         });
     }
@@ -52,7 +62,7 @@ export class ProductEditComponent implements OnInit {
 
   private fetchProducts(): void {
     this.product = this.productService.apiProductGetProductByIdIdGet(
-      this.productId, 
+      this.productId,
       getLocaleCurrencyCode(navigator.language) ?? 'PLN'
     )
     this.product.subscribe(

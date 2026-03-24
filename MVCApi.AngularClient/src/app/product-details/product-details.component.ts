@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { ProductDto, ProductService } from 'src/api';
+import { UiFeedbackService } from '../ui-feedback.service';
 
 @Component({
   selector: 'app-product-details',
@@ -20,6 +21,7 @@ export class ProductDetailsComponent implements OnInit {
   constructor(
     private readonly productService: ProductService,
     private readonly route: ActivatedRoute,
+    private readonly uiFeedback: UiFeedbackService,
   ) { }
 
   ngOnInit(): void {
@@ -29,16 +31,16 @@ export class ProductDetailsComponent implements OnInit {
 
   private fetchProducts(): void {
     this.productRes = this.productService.apiProductGetProductByIdIdGet(
-      this.productId, 
+      this.productId,
       getLocaleCurrencyCode(navigator.language) ?? 'PLN'
     )
-    this.productRes.subscribe(
-      res => {
-        console.log("Fetched product");
+    this.productRes.subscribe({
+      next: (res) => {
         this.product = res;
         this.productHTMLCode = this.generateHTMLCode();
-      }
-    )
+      },
+      error: () => this.uiFeedback.error('Could not load product details.'),
+    })
   }
 
   private generateHTMLCode(): string {
@@ -78,6 +80,7 @@ export class ProductDetailsComponent implements OnInit {
     selBox.select();
     document.execCommand('copy');
     document.body.removeChild(selBox);
+    this.uiFeedback.success('Product HTML copied to clipboard.');
   }
 
 }

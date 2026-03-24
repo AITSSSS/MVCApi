@@ -12,6 +12,7 @@ import {
 import { isEmpty } from 'src/util';
 import { AuthService } from '../auth.service';
 import { ShoppingCartService } from '../shopping-cart.service';
+import { UiFeedbackService } from '../ui-feedback.service';
 
 @Component({
   selector: 'app-checkout',
@@ -34,7 +35,8 @@ export class CheckoutComponent implements OnInit {
     private readonly customerService: CustomerService,
     private readonly cartService: ShoppingCartService,
     private readonly orderService: OrderService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly uiFeedback: UiFeedbackService
   ) {}
 
   ngOnInit(): void {
@@ -49,7 +51,8 @@ export class CheckoutComponent implements OnInit {
               next: (customer) => {
                 this.customer = customer;
               },
-              error: (err) => console.log(err),
+              error: () =>
+                this.uiFeedback.error('Could not load customer data for checkout.'),
             });
         }
       },
@@ -90,11 +93,40 @@ export class CheckoutComponent implements OnInit {
       })
       .subscribe({
         next: (orderId) => {
+          this.storeOrderInHistory(orderId);
           this.cartService.clearCart();
+          this.uiFeedback.success('Order has been created successfully.');
           this.router.navigate([`order/${orderId}`]);
         },
-        error: (err) => console.log(err),
+        error: () => this.uiFeedback.error('Could not submit order.'),
       });
+  }
+
+  private storeOrderInHistory(orderId: string): void {
+    if (!orderId) {
+      return;
+    }
+
+    const existingValue = localStorage.getItem('order_history');
+    let orderIds: string[] = [];
+
+    if (existingValue) {
+      try {
+        const parsed = JSON.parse(existingValue) as unknown;
+        if (Array.isArray(parsed)) {
+          orderIds = parsed.filter(
+            (item): item is string => typeof item === 'string' && item.length > 0
+          );
+        }
+      } catch {
+        orderIds = [];
+      }
+    }
+
+    if (!orderIds.includes(orderId)) {
+      orderIds.push(orderId);
+      localStorage.setItem('order_history', JSON.stringify(orderIds));
+    }
   }
 
   private calculateTotal(): number {
