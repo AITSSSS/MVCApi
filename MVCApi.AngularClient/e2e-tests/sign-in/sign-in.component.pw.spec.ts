@@ -3,8 +3,8 @@ import { test, expect } from '@playwright/test';
 test('TC_LOGIN_001 - Sprawdzenie, czy użytkownik może zalogować się poprawnymi danymi', async ({ page }) => {
   await page.goto('http://localhost:4200/login');
 
-  await page.fill('#email', 'admin@gmail.com');
-  await page.fill('#password', 'Admin2137@');
+  await page.fill('#loginEmail', 'admin@gmail.com');
+  await page.fill('#loginPassword', 'Admin2137@');
 
   await page.click('button[type="submit"]');
 
@@ -14,47 +14,47 @@ test('TC_LOGIN_001 - Sprawdzenie, czy użytkownik może zalogować się poprawny
 test('TC_LOGIN_002 - Sprawdzenie logowania z niepoprawnym hasłem do konta', async ({ page }) => {
   await page.goto('http://localhost:4200/login');
 
-  await page.fill('#email', 'admin@gmail.com');
-  await page.fill('#password', 'aaaaaaa');
+  await page.fill('#loginEmail', 'admin@gmail.com');
+  await page.fill('#loginPassword', 'aaaaaaa');
 
   await page.click('button[type="submit"]');
 
   await expect(page).toHaveURL('http://localhost:4200/login');
-  await expect(page.locator('.alert-danger')).toHaveText('Cannot authenticate user.');
+  await expect(page.locator('.status-error')).toHaveText('Cannot authenticate user.');
 });
 
 test('TC_LOGIN_003 - Sprawdzenie logowania z nieistniejącym emailem', async ({ page }) => {
   await page.goto('http://localhost:4200/login');
 
-  await page.fill('#email', 'fakeuser@gmail.com');
-  await page.fill('#password', 'aaaaaaa');
+  await page.fill('#loginEmail', 'fakeuser@gmail.com');
+  await page.fill('#loginPassword', 'aaaaaaa');
 
   await page.click('button[type="submit"]');
 
   await expect(page).toHaveURL('http://localhost:4200/login');
-  await expect(page.locator('.alert-danger')).toHaveText('No user with such email in database.');
+  await expect(page.locator('.status-error')).toHaveText('No user with such email in database.');
 });
 
 test('TC_LOGIN_004 - Sprawdzenie logowania przy pustym lub niepoprawnym polu email', async ({ page }) => {
   await page.goto('http://localhost:4200/login');
 
-  await page.fill('#email', '');
-  await page.fill('#password', 'aaaaaaa');
+  await page.fill('#loginEmail', '');
+  await page.fill('#loginPassword', 'aaaaaaa');
 
   await page.click('button[type="submit"]');
 
   await expect(page).toHaveURL('http://localhost:4200/login');
-  await expect(page.locator('.alert-danger')).toHaveText('Bad email.');
+  await expect(page.locator('.status-error')).toHaveText('Bad email.');
 });
 
 test('TC_LOGIN_005 - Sprawdzenie logowania przy pustym polu hasła', async ({ page }) => {
   await page.goto('http://localhost:4200/login');
 
-  await page.fill('#email', 'fakeuser@gmail.com');
-  await page.fill('#password', '');
+  await page.fill('#loginEmail', 'fakeuser@gmail.com');
+  await page.fill('#loginPassword', '');
 
   await page.click('button[type="submit"]');
 
   await expect(page).toHaveURL('http://localhost:4200/login');
-  await expect(page.locator('.alert-danger')).toHaveText('No password.');
+  await expect(page.locator('.status-error')).toHaveText('No password.');
 });
