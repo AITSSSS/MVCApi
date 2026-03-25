@@ -65,7 +65,7 @@ export class AuthService {
         },
         error: (err) => {
           console.log(err);
-          let msg = 'Something went wrong';
+          let msg = 'Something went wrong.';
           if(err?.error.includes('User with identifier')) {
             msg = 'No user with such email in database.';
           } else if (err?.error?.message) {
