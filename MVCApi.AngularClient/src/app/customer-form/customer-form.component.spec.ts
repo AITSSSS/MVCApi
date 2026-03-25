@@ -1,5 +1,6 @@
 ﻿import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 import { CreateCustomer, CustomerService } from 'src/api';
 import { AuthService } from '../auth.service';
@@ -9,6 +10,7 @@ describe('CustomerFormComponent', () => {
   let component: CustomerFormComponent;
   let fixture: ComponentFixture<CustomerFormComponent>;
   let customerService: jasmine.SpyObj<CustomerService>;
+  let router: jasmine.SpyObj<Router>;
   let authService: { currentUser: BehaviorSubject<any>; linkCustomer: jasmine.Spy };
 
   const validFormValue = {
@@ -28,6 +30,7 @@ describe('CustomerFormComponent', () => {
     customerService = jasmine.createSpyObj<CustomerService>('CustomerService', [
       'apiCustomerCreateCustomerPost'
     ]);
+    router = jasmine.createSpyObj<Router>('Router', ['navigate']);
     authService = {
       currentUser: new BehaviorSubject<any>({ domainUserId: undefined }),
       linkCustomer: jasmine.createSpy('linkCustomer')
@@ -42,7 +45,8 @@ describe('CustomerFormComponent', () => {
       imports: [ReactiveFormsModule],
       providers: [
         { provide: CustomerService, useValue: customerService },
-        { provide: AuthService, useValue: authService }
+        { provide: AuthService, useValue: authService },
+        { provide: Router, useValue: router }
       ]
     }).compileComponents();
 
@@ -93,6 +97,7 @@ describe('CustomerFormComponent', () => {
     expect(component.form.valid).toBeFalse();
     expect(customerService.apiCustomerCreateCustomerPost).not.toHaveBeenCalled();
     expect(authService.linkCustomer).not.toHaveBeenCalled();
+    expect(router.navigate).not.toHaveBeenCalled();
   });
 
   it('should submit valid form and link customer when user has no linked customer', () => {
@@ -106,6 +111,7 @@ describe('CustomerFormComponent', () => {
       component.form.value as CreateCustomer
     );
     expect(authService.linkCustomer).toHaveBeenCalledWith('customer-1');
+    expect(router.navigate).toHaveBeenCalledWith(['/customers']);
   });
 
   it('should submit valid form and not link customer when user already has linked customer', () => {
@@ -118,6 +124,7 @@ describe('CustomerFormComponent', () => {
       component.form.value as CreateCustomer
     );
     expect(authService.linkCustomer).not.toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith(['/customers']);
   });
 });
 

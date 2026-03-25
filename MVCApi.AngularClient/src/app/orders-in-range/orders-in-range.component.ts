@@ -38,8 +38,8 @@ export class OrdersInRangeComponent implements OnInit {
     }).subscribe((res) => {
       this.orderService
         .apiOrderGetOrdersInDateRangeGet(
-          new Date(res.startDate).toISOString(),
-          new Date(res.endDate).toISOString(),
+          this.toInputDate(res.startDate),
+          this.toInputDate(res.endDate),
           getLocaleCurrencyCode(navigator.language) ?? 'PLN'
         )
         .subscribe((orders) => {
@@ -122,12 +122,24 @@ export class OrdersInRangeComponent implements OnInit {
   }
 
   private toInputDate(value: Date): string {
-    return value.toISOString().slice(0, 10);
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, '0');
+    const day = String(value.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   private fromInputDate(value: string): Date | null {
     if (!value) return null;
-    const parsed = new Date(`${value}T00:00:00`);
+    const [yearPart, monthPart, dayPart] = value.split('-');
+    const year = Number(yearPart);
+    const month = Number(monthPart);
+    const day = Number(dayPart);
+
+    if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) {
+      return null;
+    }
+
+    const parsed = new Date(year, month - 1, day);
     return Number.isNaN(parsed.getTime()) ? null : parsed;
   }
 
