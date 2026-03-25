@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using MVCApi.Domain;
 using MVCApi.Domain.Entites;
+using MVCApi.Domain.Exceptions;
 
 namespace MVCApi.Application.Commands
 {
@@ -29,7 +30,20 @@ namespace MVCApi.Application.Commands
                 var product = await _productRepository.GetByIdAsync(request.ProductId);
                 var cart = await _cartRepository.GetByIdAsync(request.CartId);
 
-                cart.AddProduct(product, request.Count);
+                try 
+                {
+                    cart.AddProduct(product, request.Count);
+                }
+                catch (ProductAlreadyInCartException)
+                {
+                    // TODO: Return error message to FE instead.
+                    return cart.Id;   
+                }
+                catch (InvalidProductCount)
+                {
+                    return cart.Id;
+                }
+
                 await _cartRepository.EditAsync(cart);
 
                 return cart.Id;

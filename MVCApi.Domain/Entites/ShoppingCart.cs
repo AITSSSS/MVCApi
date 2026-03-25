@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MVCApi.Domain.Enums;
+using MVCApi.Domain.Exceptions;
 
 namespace MVCApi.Domain.Entites
 {
@@ -24,7 +25,12 @@ namespace MVCApi.Domain.Entites
 
         public void AddProduct(Product product, int count)
         {
-            // TODO: Check if product can be added
+            if (count < 1)
+                throw new InvalidProductCount();
+
+            if (this.Products.Any(x => x.ProductId == product.Id))
+                throw new ProductAlreadyInCartException(this.Id, product.Id);
+
             if (State != ShoppingCartState.Operable)
                 return; //TODO: Throw
 
