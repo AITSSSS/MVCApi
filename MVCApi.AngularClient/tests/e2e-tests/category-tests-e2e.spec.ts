@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Categories E2E', () => {
-  test('TC_CATEGORIES_001 - tworzenie kategorii z nazwą złożoną z jednego słowa', async ({ page }) => {
+test('TC_CATEGORIES_001 - tworzenie kategorii z nazwą złożoną z jednego słowa', async ({ page }) => {
 
     await page.goto('http://localhost:4200/login');
     await page.fill('#loginEmail', 'admin@gmail.com');   
@@ -19,6 +18,9 @@ test.describe('Categories E2E', () => {
 
     await expect(page.locator('body')).toContainText('misiaczek');
   });
+
+test.describe('Categories E2E', () => {
+  
 });
 test.describe('Categories E2E', () => {
   test('TC_CATEGORIES_002 - tworzenie kategorii z nazwą złożoną z trzech słów', async ({ page }) => {
