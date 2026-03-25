@@ -20,7 +20,8 @@
           <app-product [product]="product"></app-product>
         </div>
         <div class="card-footer bg-transparent text-end d-flex justify-content-end gap-2">
-          <button class="btn btn-primary btn-sm" type="button" (click)="addToCart(product.id)">Add to cart</button>
+          <input class="w-25 form-control" type="number" value="1" #count />
+          <button class="btn btn-primary btn-sm" type="button" (click)="addToCart(product.id, count.value)">Add to cart</button>
           <button class="btn btn-outline-primary btn-sm" type="button" [routerLink]="['/', 'products', 'edit', product.id]">Edit</button>
         </div>
       </div>

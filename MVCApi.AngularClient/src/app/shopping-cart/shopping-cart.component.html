@@ -6,6 +6,7 @@
 
 <section *ngIf="!isLoading && $cart" class="row g-3">
   <div class="col-lg-9 d-grid gap-3">
+    <p id="cart-empty-msg" *ngIf="$cart.products?.length == 0">Your cart is empty</p>
     <div class="card" *ngFor="let product of $cart.products">
       <div class="card-body">
         <app-product [product]="product.product"></app-product>

@@ -11,7 +11,6 @@ import {
   ProductService,
 } from 'src/api';
 import { ShoppingCartService } from '../shopping-cart.service';
-import { jsPDF } from 'jspdf';
 import { UiFeedbackService } from '../ui-feedback.service';
 
 @Component({
@@ -65,7 +64,7 @@ export class ProductsComponent implements OnInit {
     this.fetchProducts()
   }
 
-  addToCart(id: string | undefined) {
+  addToCart(id: string | undefined, count: string) {
     if (!id) return;
 
     this.shoppingCartService.getOrCreateCart().then((cart) => {
@@ -73,7 +72,7 @@ export class ProductsComponent implements OnInit {
         .apiCartAddProductToCartPut({
           cartId: cart?.id,
           productId: id,
-          count: 1,
+          count: parseInt(count),
         })
         .subscribe({
           next: () => this.uiFeedback.success('Product added to cart.'),
