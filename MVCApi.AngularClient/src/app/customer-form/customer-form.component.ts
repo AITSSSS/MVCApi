@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { CreateCustomer, CustomerService } from 'src/api';
 import { isEmpty } from 'src/util';
 import { AuthService } from '../auth.service';
@@ -31,7 +32,8 @@ export class CustomerFormComponent implements OnInit {
 
   constructor(
     private readonly customerService: CustomerService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly router: Router
   ) {}
 
   ngOnInit(): void {}
@@ -54,6 +56,7 @@ export class CustomerFormComponent implements OnInit {
                 }
                 this.isSaving = false;
                 this.saveStatus = 'saved';
+                void this.router.navigate(['/customers']);
               },
               error: () => {
                 this.isSaving = false;
