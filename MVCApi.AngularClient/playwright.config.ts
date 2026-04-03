@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const authStatePath = 'playwright/.auth/admin.json';
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -26,7 +28,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
-    // baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:4200',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -35,18 +37,39 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+    },
+
+    {
+      name: 'authenticated-chromium',
+      testMatch: /.*storage-state\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: authStatePath,
+      },
+      dependencies: ['setup'],
+    },
+
+    {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      testIgnore: /.*\.setup\.ts/,
+      grepInvert: /TC_AUTH_STATE_/,
     },
 
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
+      testIgnore: /.*\.setup\.ts/,
+      grepInvert: /TC_AUTH_STATE_/,
     },
 
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
+      testIgnore: /.*\.setup\.ts/,
+      grepInvert: /TC_AUTH_STATE_/,
     },
 
     /* Test against mobile viewports. */
