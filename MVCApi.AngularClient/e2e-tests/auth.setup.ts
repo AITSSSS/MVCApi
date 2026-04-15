@@ -1,6 +1,6 @@
 ﻿import { expect, test as setup } from '@playwright/test';
 
-const authStatePath = 'playwright/.auth/admin.json';
+export const authStatePath = 'playwright/.auth/admin.json';
 
 setup('login once and save browser storage state', async ({ page }) => {
   await page.goto('/login');
