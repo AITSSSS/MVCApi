@@ -30,14 +30,13 @@
     <app-products-pdf [products]="products"></app-products-pdf>
 
     <app-pagination
-      [(pageIndex)]="pageIndex"
-      (pageIndexChange)="pageIndexChange()"
-      [(totalPages)]="totalPages"
-      (totalPagesChange)="totalPagesChange()"
+      [pageIndex]="pageIndex"
+      (pageIndexChange)="pageIndexChange($event)"
+      [totalPages]="totalPages"
       [hasNextPage]="hasNextPage"
       [hasPreviousPage]="hasPreviousPage"
-      [(pageSize)]="pageSize"
-      (pageSizeChange)="pageSizeChange()"
+      [pageSize]="pageSize"
+      (pageSizeChange)="pageSizeChange($event)"
     ></app-pagination>
   </div>
 </section>

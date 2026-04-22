@@ -18,6 +18,8 @@ describe('ProductsComponent', () => {
   let uiFeedback: jasmine.SpyObj<UiFeedbackService>;
 
   beforeEach(async () => {
+    sessionStorage.clear();
+
     const mockActivatedRoute = {
       queryParams: of({ categoryId: '123'})
       }
@@ -105,7 +107,7 @@ describe('ProductsComponent', () => {
     spyOn((component as any).cartService, 'apiCartAddProductToCartPut')
       .and.returnValue(of('123'));
 
-    component.addToCart('1');
+    component.addToCart('1', '1');
     tick();
 
     expect((component as any).shoppingCartService.getOrCreateCart)
@@ -120,7 +122,7 @@ describe('ProductsComponent', () => {
     spyOn((component as any).shoppingCartService, 'getOrCreateCart');
     spyOn((component as any).cartService, 'apiCartAddProductToCartPut');
 
-    component.addToCart(undefined);
+    component.addToCart(undefined, '1');
 
     expect((component as any).shoppingCartService.getOrCreateCart).not.toHaveBeenCalled();
     expect((component as any).cartService.apiCartAddProductToCartPut).not.toHaveBeenCalled();
@@ -134,7 +136,7 @@ describe('ProductsComponent', () => {
     spyOn((component as any).cartService, 'apiCartAddProductToCartPut')
       .and.returnValue(throwError(() => new Error('Fake error')));
 
-    component.addToCart('1');
+    component.addToCart('1', '1');
     tick();
 
     expect((component as any).shoppingCartService.getOrCreateCart)
@@ -170,5 +172,35 @@ describe('ProductsComponent', () => {
     expect((component as any).productService.apiProductGetPaginatedProductsGet)
       .toHaveBeenCalledOnceWith(jasmine.any(Number), jasmine.any(Number), fakeCurrCode);
   });
-});
 
+  it('should initialize pagination values from session storage', () => {
+    sessionStorage.setItem(
+      'productsPaginationSettings',
+      JSON.stringify({ pageNumber: 3, pageSize: 10 })
+    );
+
+    const localFixture = TestBed.createComponent(ProductsComponent);
+    const localComponent = localFixture.componentInstance;
+    spyOn(localComponent as any, 'fetchProducts');
+
+    localComponent.ngOnInit();
+
+    expect(localComponent.pageIndex).toBe(3);
+    expect(localComponent.pageSize).toBe(10);
+  });
+
+  it('should save page number and page size to session storage on page size change', () => {
+    component.pageIndex = 4;
+    component.pageSize = 10;
+    spyOn(component as any, 'fetchProducts');
+
+    component.pageSizeChange();
+
+    const stored = sessionStorage.getItem('productsPaginationSettings');
+    expect(stored).not.toBeNull();
+    expect(JSON.parse(stored as string)).toEqual({
+      pageNumber: 1,
+      pageSize: 10,
+    });
+  });
+});

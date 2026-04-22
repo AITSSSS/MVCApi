@@ -13,6 +13,11 @@ import {
 import { ShoppingCartService } from '../shopping-cart.service';
 import { UiFeedbackService } from '../ui-feedback.service';
 
+interface ProductsPaginationSettings {
+  pageNumber: number;
+  pageSize: number;
+}
+
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
@@ -25,6 +30,8 @@ export class ProductsComponent implements OnInit {
 
   categoryId: string | null = null;
   pdfProducts: ProductDtoIPaginatedList | null = null;
+
+  private readonly paginationSessionKey = 'productsPaginationSettings';
 
   pageIndex: number = 1;
   pageSize: number = 5;
@@ -42,6 +49,8 @@ export class ProductsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadPaginationSettings();
+
     this.route.queryParams.subscribe((params) => {
       this.categoryId = params['categoryId'];
       this.fetchProducts();
@@ -52,7 +61,11 @@ export class ProductsComponent implements OnInit {
 
   }
 
-  pageIndexChange() {
+  pageIndexChange(pageIndex?: number) {
+    if (typeof pageIndex === 'number' && pageIndex > 0) {
+      this.pageIndex = pageIndex;
+    }
+    this.savePaginationSettings();
     this.fetchProducts()
   }
 
@@ -60,7 +73,12 @@ export class ProductsComponent implements OnInit {
     this.fetchProducts()
   }
 
-  pageSizeChange() {
+  pageSizeChange(pageSize?: number) {
+    if (typeof pageSize === 'number' && pageSize > 0) {
+      this.pageSize = pageSize;
+    }
+    this.pageIndex = 1;
+    this.savePaginationSettings();
     this.fetchProducts()
   }
 
@@ -105,9 +123,38 @@ export class ProductsComponent implements OnInit {
         this.totalPages = res.totalPages ?? 1;
         this.hasNextPage = res.hasNextPage ?? false;
         this.hasPreviousPage = res.hasPreviousPage ?? false;
+        this.savePaginationSettings();
       },
       error: () => this.uiFeedback.error('Could not load products.'),
     });
+  }
+
+  private loadPaginationSettings(): void {
+    const stored = sessionStorage.getItem(this.paginationSessionKey);
+    if (!stored) {
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(stored) as Partial<ProductsPaginationSettings>;
+      if (typeof parsed.pageNumber === 'number' && parsed.pageNumber > 0) {
+        this.pageIndex = parsed.pageNumber;
+      }
+      if (typeof parsed.pageSize === 'number' && parsed.pageSize > 0) {
+        this.pageSize = parsed.pageSize;
+      }
+    } catch {
+      sessionStorage.removeItem(this.paginationSessionKey);
+    }
+  }
+
+  private savePaginationSettings(): void {
+    const settings: ProductsPaginationSettings = {
+      pageNumber: this.pageIndex,
+      pageSize: this.pageSize,
+    };
+
+    sessionStorage.setItem(this.paginationSessionKey, JSON.stringify(settings));
   }
 
 
