@@ -22,7 +22,13 @@
 
   <div class="d-flex align-items-center gap-2">
     <label class="form-label mb-0" for="pageSizeSelect">Page size</label>
-    <select id="pageSizeSelect" class="form-select form-select-sm" style="width: 120px" [value]="pageSize" (change)="onPageSizeChanged($event)">
+    <select
+      id="pageSizeSelect"
+      class="form-select form-select-sm"
+      style="width: 120px"
+      [(ngModel)]="pageSize"
+      (ngModelChange)="onPageSizeChanged({ value: $event })"
+    >
       <option *ngFor="let size of allowedPageSizes" [value]="size">{{ size }}</option>
     </select>
   </div>
